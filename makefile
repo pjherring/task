@@ -1,14 +1,15 @@
 MAIN_EXEC = task
 TEST_EXEC = test
 
-SRC_FILES = src/helper.c
-TEST_SRC_FILES = tests/all_tests.c tests/helper_tests.c tests/CuTest.c
+SRC_FILES = src/helper.c src/task_io.c src/command.c
+TEST_SRC_FILES = tests/all_tests.c tests/helper_tests.c tests/CuTest.c tests/task_io_test.c \
+	tests/command_tests.c
 
-
-.PHONY : task compile clean compile_tests
+.PHONY : task compile clean test compile_tests
 
 task : compile
 	gcc -o $(MAIN_EXEC) tmp/*.o
+	./$(MAIN_EXEC)
 
 compile :
 	gcc -c $(SRC_FILES)
@@ -17,7 +18,8 @@ compile :
 
 test : compile_tests 
 	gcc -o $(TEST_EXEC) tmp/test/*.o
-	./$(TEST_EXEC)
+	-./$(TEST_EXEC)
+	$(MAKE) clean
 
 compile_tests : compile
 	gcc -c $(TEST_SRC_FILES)
@@ -27,6 +29,8 @@ compile_tests : compile
 
 clean :
 	-rm -rf tmp
+	-rm $(MAIN_EXEC)
+	-rm $(TEST_EXEC)
 
 
 
