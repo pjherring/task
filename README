@@ -1,0 +1,8 @@
+Task is a program that helps you keep track of what you are doing.
+
+Task will ask you what you are doing. If you need to change tasks you type "n"
+It will then ask you what the new task is. If you want to enter any information
+about the task you are working on type the letter "i". Task will then ask
+what the information is and store it with the current task. When you have completed
+a task type "c". Task will confirm and then show you the next task you need to completed
+
