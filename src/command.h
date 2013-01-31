@@ -3,14 +3,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "helper.h"
+#include "assertions.h"
+
+typedef enum {
+    CommandTypeAddTask, 
+    CommandTypeTakeNote, 
+    CommandTypeCompleteTask,
+    CommandTypeNotFound
+} command_t;
+
+
+typedef struct {
+    char * name;
+    char * info;
+} CommandDataT;
+
 
 typedef struct Command {
+    command_t type;
 	char * name;
-	char **data;
-} Command;
+    CommandDataT * data;
+} CommandT;
 
-static size_t command_size_t = sizeof(Command);
+static size_t command_size = sizeof(CommandT);
+CommandT * NewCommand(char * const command_str);
 
-Command * NewCommand();
+static char * kTaskCommandStr = "task";
+static char * kNoteCommandStr = "note";
+static char * kCompleteTask = "complete";
 
 #endif

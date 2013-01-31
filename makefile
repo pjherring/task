@@ -1,15 +1,20 @@
 MAIN_EXEC = task
 TEST_EXEC = test
 
-SRC_FILES = src/helper.c src/task_io.c src/command.c
+SRC_FILES = src/helper.c src/task_io.c src/command.c 
 TEST_SRC_FILES = tests/all_tests.c tests/helper_tests.c tests/CuTest.c tests/task_io_test.c \
 	tests/command_tests.c
 
-.PHONY : task compile clean test compile_tests
+.PHONY : task compile clean test compile_tests sketch
 
 task : compile
 	gcc -o $(MAIN_EXEC) tmp/*.o
 	./$(MAIN_EXEC)
+
+sketch :
+	gcc -o sketch sketch.c
+	-./sketch
+	-rm sketch
 
 compile :
 	gcc -c $(SRC_FILES)

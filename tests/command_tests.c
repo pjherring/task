@@ -2,8 +2,9 @@
 #include "../src/command.h"
 
 void test_new_command(CuTest *tc) {
-	Command *command = NewCommand();
+	CommandT *command = NewCommand("task to do something");
 	CuAssertPtrNotNullMsg(tc, "the command pointer is null", command);
+    CuAssertIntEquals_Msg(tc, "the command type should be task", CommandTypeAddTask, command->type);
 }
 
 CuSuite* command_suite() {
