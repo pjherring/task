@@ -63,3 +63,18 @@ size_t split_arr_size(char * str, char * delim) {
     return sizeof(char *) * (stroccur(str, delim) + 2);
 }
 
+
+static int kAsciiDiff = 'a' - 'A';
+
+void strlower(char * to_lower) {
+    int i = 0;
+
+    while (to_lower[i] != '\0') {
+        char c = to_lower[i];
+        if (i >= 'A' && i <= 'Z') {
+            c += kAsciiDiff;
+            to_lower[i] = c;
+        }
+    }
+}
+

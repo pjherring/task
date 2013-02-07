@@ -6,12 +6,13 @@ CommandDataT * data_from_string(char * const command_str);
 CommandT * NewCommand(char * const command_str) {
 
 	CommandT *command = malloc(command_size);
-    assert_that(command, "command was not malloced");
+
+    assert(command);
 
     command->type = command_from_string(command_str);
     command->data = data_from_string(command_str);
 
-    assert_that(command->type != CommandTypeNotFound, "Could not make command from \"%s\"\n", command_str);
+    assert(command->type != CommandTypeNotFound);
 
 	return command;
 }

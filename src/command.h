@@ -29,10 +29,12 @@ typedef struct Command {
 } CommandT;
 
 static size_t command_size = sizeof(CommandT);
-CommandT * NewCommand(char * const command_str);
+
 
 static char * kTaskCommandStr = "task";
 static char * kNoteCommandStr = "note";
 static char * kCompleteTask = "complete";
+
+CommandT * NewCommand(char * const command_str);
 
 #endif

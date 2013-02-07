@@ -27,4 +27,10 @@ int stroccur(char * str, char * delim);
  */
 size_t split_arr_size(char * str, char * delim);
 
+/*
+ * This will lowercase @param to_lower
+ * @param to_lower the string to change all characters to lowercase
+ */
+void strlower(char * to_lower);
+
 #endif
