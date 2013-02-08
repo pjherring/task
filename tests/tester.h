@@ -1,8 +1,13 @@
-#ifndef SYMBOL
-#define SYMBOL 
+#ifndef TK_TESTER
+#define TK_TESTER 
 
-//add tests here
-#include "task_strings_test.h"
+//includes
+#include <signal.h>
 #include "suite.h"
+
+#define assertStrEqual(exp, act) assert(strcmp(exp, act) == 0)
+
+//suite getters
+SuiteT* Suite_tk_string();
 
 #endif

@@ -1,4 +1,4 @@
-#include "task_strings.h"
+#include "tk_string.h"
 
 /*
  * =====================================================================================
@@ -46,14 +46,14 @@ void strsplit(char **parts, char * str, char * delim) {
     parts[parts_idx] = NULL;
 }
 
-int stroccur(char * str, char * delim) {
+int stroccur(char * str, char * substr) {
     int count = 0;
     int offset = 0;
-    char * occurance = strstr(str, delim);
+    char * occurance = strstr(str, substr);
 
     while (occurance) {
         count++;
-        occurance = strstr(occurance + 1, delim);
+        occurance = strstr(occurance + 1, substr);
     }
 
     return count;
@@ -69,9 +69,9 @@ static int kAsciiDiff = 'a' - 'A';
 void strlower(char * to_lower) {
     int i = 0;
 
-    while (to_lower[i] != '\0') {
+    for (i; to_lower[i] != '\0'; i++) {
         char c = to_lower[i];
-        if (i >= 'A' && i <= 'Z') {
+        if (c >= 'A' && c <= 'Z') {
             c += kAsciiDiff;
             to_lower[i] = c;
         }

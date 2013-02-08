@@ -3,23 +3,36 @@
 int run_local(SuiteT *suite);
 void destroy_local(SuiteT *suite);
 
-SuiteT* Suite(int test_count, ...) {
+static const int kTestsDefaultSize = 10;
+
+SuiteT* Suite(char * const name, ...) {
     SuiteT *instance = malloc(suite_size);
-    instance->test_count = test_count;
+
+    instance->run = &run_local;
+    instance->destroy = &destroy_local;
+    instance->name = name;
 
     va_list ap;
-    va_start(ap, test_count);
+    va_start(ap, name);
 
-    instance->tests = malloc(sizeof(test_case_fp) * test_count);
+    int current_size = kTestsDefaultSize;
+    instance->tests = malloc(sizeof(test_case_fp) * current_size);
+    test_case_fp test_case;
+    int test_case_idx = 0;
 
-    int test_case_idx;
-    for (test_case_idx = 0; test_case_idx < test_count; test_case_idx++) {
-        test_case_fp test_case = va_arg(ap, test_case_fp);
-        instance->tests[test_case_idx] = test_case;
-    }
+    do {
+        test_case = va_arg(ap, test_case_fp);
+        instance->tests[test_case_idx++] = test_case;
 
-    instance->run = ^int() { run_local(instance); };
-    instance->destroy = ^void() { destroy_local(instance); };
+        if (test_case_idx == current_size) {
+            current_size += kTestsDefaultSize;
+            instance->tests = realloc(
+                instance->tests,
+                sizeof(test_case_fp) * current_size
+            );
+        }
+
+    } while (test_case != NULL);
 
     return instance;
 }
@@ -27,28 +40,37 @@ SuiteT* Suite(int test_count, ...) {
 int run_local(SuiteT *suite) {
 
     pid_t pid;
-    int test_idx;
+    int test_idx = 0;
+    int failure_count = 0;
+    test_case_fp test_case;
 
-    for (test_idx = 0; test_idx < suite->test_count; test_idx++) {
+    while ( (test_case = suite->tests[test_idx++]) != NULL) {
 
         pid = fork();
-        printf("process %d\n", pid);
 
         if (pid == 0) {
             //child
-            printf("child\n");
-            sleep(1);
-            test_case_fp test_case = *suite->tests[test_idx];
             test_case();
+            printf(".");
+            exit(0);
         } else {
-            printf("parent\n");
-            int status = 0;
+            int status;
             waitpid(pid, &status, 0);
-            printf("status: %d\n", WEXITSTATUS(status));
+
+            if (!WIFEXITED(status)) {
+
+                if (WIFSIGNALED(status) && WTERMSIG(status) == SIGABRT) {
+                    printf("F");
+                    failure_count++;
+                }
+
+            } 
         }
     }
 
-    return 1;
+    printf("\n");
+
+    return failure_count;
 }
 
 void destroy_local(SuiteT *suite) {

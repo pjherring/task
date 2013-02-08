@@ -19,7 +19,7 @@
 
 static const char kLogPrepend[] = "[%s: %s, %s (Line %d)] ";
 
-void task_log(char level[], char file[], const char function_name[], int line_num, char * const fmt, ...) {
+void tk_log(char level[], char file[], const char function_name[], int line_num, char * const fmt, ...) {
     va_list args;
     va_start(args, fmt);
 

@@ -1,12 +1,39 @@
 #include "tester.h"
 
-int main() {
-    SuiteT * task_string_suite = mk_task_strings_suite();
-    int status = task_string_suite->run_suite(task_string_suite);
+SuiteT** get_suites();
 
-    if (status > 0) {
-        printf("Failures");
+int main() {
+
+    SuiteT** suites = get_suites();
+    int suite_idx = 0;
+    int suite_result = 0;
+    SuiteT* current_suite;
+
+    while ( (current_suite = suites[suite_idx++]) != NULL) {
+        printf("Testing %s\n", current_suite->name);
+        int failure_count = current_suite->run(current_suite);
+
+        if (failure_count > 0) {
+            printf("Failures!\n");
+        }
+
+        suite_result += failure_count;
+        current_suite->destroy(current_suite);
     }
 
-    return status;
+    free(suites);
+    if (suite_result == 0) {
+        printf("Success!\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+SuiteT** get_suites() {
+    SuiteT** suites = malloc(sizeof(SuiteT *) * 2);
+    suites[0] = Suite_tk_string();
+    suites[1] = NULL;
+
+    return suites;
 }

@@ -1,5 +1,5 @@
-#ifndef TASK_STRING
-#define TASK_STRING 
+#ifndef TK_STRING
+#define TK_STRING 
 
 #include <stdio.h>
 #include <stdlib.h>

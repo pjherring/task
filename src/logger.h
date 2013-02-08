@@ -1,8 +1,9 @@
-#ifndef LOG
-#define LOG 
+#ifndef TK_LOG
+#define TK_LOG 
 
+#define _DEBUG(fmt) DEBUG(fmt, NULL)
 #define DEBUG(fmt, ...) do { \
-    task_log("Debug", __FILE__, __FUNCTION__, __LINE__, fmt, __VA_ARGS__); \
+    tk_log("Debug", __FILE__, __FUNCTION__, __LINE__, fmt, __VA_ARGS__); \
 } while(0);
 
 #include <stdio.h>
@@ -10,6 +11,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-void task_log(char level[], char file[], const char function_name[], int line_num, char * fmt, ...);
+void tk_log(char level[], char file[], const char function_name[], int line_num, char * fmt, ...);
 
 #endif
