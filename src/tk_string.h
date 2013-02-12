@@ -6,6 +6,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "common.h"
+
 /*
  * Copy the substring of str into dest starting at start with a length of len
  */

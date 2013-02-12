@@ -1,22 +1,30 @@
 MAIN_EXEC = task
 TEST_EXEC = test
 
-SRC_FILES = src/tk_string.c src/logger.c
-TEST_SRC_FILES = tests/tester.c tests/suite.c tests/tk_string_test.c 
+SRC_FILES = src/tk_string.c src/logger.c src/common.c src/list.c src/dict.c src/command.c
+TEST_SRC_FILES = tests/tester.c tests/suite.c tests/tk_string_test.c tests/list_test.c \
+				tests/dict_test.c tests/command_test.c
+CC = clang -Werror
 
-.PHONY : task compile clean test compile_tests sketch clean_tests test_debug
+.PHONY : task compile clean test compile_tests sketch clean_tests test_debug scan
 
 task : compile
-	gcc -o $(MAIN_EXEC) tmp/*.o
+	$(CC) -o $(MAIN_EXEC) tmp/*.o
 	./$(MAIN_EXEC)
 
+scan : 
+	scan-build $(CC) $(SRC_FILES)
+
+scan_tests :
+	scan-build $(CC) $(TEST_SRC_FILES) $(SRC_FILES)
+
 sketch :
-	gcc -o sketch sketch.c
-	-./sketch
+	$(CC) -o sketch sketch.c
+	@./sketch
 	-rm sketch
 
 compile :
-	gcc -c $(SRC_FILES)
+	$(CC) -c $(SRC_FILES)
 	-mkdir -p tmp
 	-mv *.o tmp
 
@@ -25,19 +33,19 @@ clean :
 	rm $(MAIN_EXEC)
 
 test_debug : 
-	gcc -o $(TEST_EXEC) -g $(TEST_SRC_FILES) $(SRC_FILES)
+	$(CC) -o $(TEST_EXEC) -g $(TEST_SRC_FILES) $(SRC_FILES)
 	-gdb $(TEST_EXEC)
 	$(MAKE) clean_debug_tests
 
 test : compile_tests
-	gcc -o $(TEST_EXEC) tmp/test/*.o
+	$(CC) -o $(TEST_EXEC) tmp/test/*.o
 	@echo "\nTESTING\n"
 	-./$(TEST_EXEC)
 	@echo "\nDONE TESTING\n"
 	$(MAKE) clean_tests
 
 compile_tests : compile
-	gcc -c $(TEST_SRC_FILES)
+	$(CC) -c $(TEST_SRC_FILES)
 	-mkdir -p tmp/test
 	-mv *.o tmp/test
 	-cp tmp/*.o tmp/test
@@ -45,6 +53,7 @@ compile_tests : compile
 clean_tests :
 	rm -rf tmp
 	rm $(TEST_EXEC)
+	rm -rf test.dSYM/
 
 clean_debug_tests :
 	rm $(TEST_EXEC)

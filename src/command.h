@@ -1,40 +1,35 @@
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef TK_COMMAND_H
+#define TK_COMMAND_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "helper.h"
-#include "assertions.h"
+#include "common.h"
+#include "list.h"
+#include "dict.h"
+#include "tk_string.h"
 
 typedef enum {
-    CommandTypeAddTask, 
-    CommandTypeTakeNote, 
-    CommandTypeCompleteTask,
-    CommandTypeNotFound
-} command_t;
+    CommandTypeTask, CommandTypeNote, CommandTypeComplete
+} CommandType;
 
-
-typedef struct {
-    char * name;
-    char * info;
-} CommandDataT;
-
-
-typedef struct Command {
-    command_t type;
-	char * name;
-    CommandDataT * data;
+typedef struct CommandT {
+    CommandType type;
+    char * text;
+    ListT *notes;
+    /*
+     * The deconstructor
+     */
+    void (*destroy)(struct CommandT* self);
+    /*
+     * Add a note to this command
+     */
+    void (*add_note)(struct CommandT* self, char * note);
+    /*
+     * The status of the command
+     */
+    int is_open;
 } CommandT;
 
+CommandT* Command(char * const command_text);
+
 static size_t command_size = sizeof(CommandT);
-
-
-static char * kTaskCommandStr = "task";
-static char * kNoteCommandStr = "note";
-static char * kCompleteTask = "complete";
-
-CommandT * NewCommand(char * const command_str);
 
 #endif

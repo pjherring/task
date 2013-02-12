@@ -10,7 +10,7 @@ int main() {
     SuiteT* current_suite;
 
     while ( (current_suite = suites[suite_idx++]) != NULL) {
-        printf("Testing %s\n", current_suite->name);
+        printf("\nTesting %s\n", current_suite->name);
         int failure_count = current_suite->run(current_suite);
 
         if (failure_count > 0) {
@@ -31,9 +31,12 @@ int main() {
 }
 
 SuiteT** get_suites() {
-    SuiteT** suites = malloc(sizeof(SuiteT *) * 2);
+    SuiteT** suites = malloc(sizeof(SuiteT *) * 5);
     suites[0] = Suite_tk_string();
-    suites[1] = NULL;
+    suites[1] = Suite_list();
+    suites[2] = Suite_dict();
+    suites[3] = Suite_command();
+    suites[4] = NULL;
 
     return suites;
 }

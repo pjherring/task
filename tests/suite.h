@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <assert.h>
 #include "../src/logger.h"
 #include "../common/ptr.h"
 

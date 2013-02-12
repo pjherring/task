@@ -1,7 +1,7 @@
 #include "suite.h"
 
-int run_local(SuiteT *suite);
-void destroy_local(SuiteT *suite);
+static int run_local(SuiteT *suite);
+static void destroy(SuiteT *suite);
 
 static const int kTestsDefaultSize = 10;
 
@@ -9,7 +9,7 @@ SuiteT* Suite(char * const name, ...) {
     SuiteT *instance = malloc(suite_size);
 
     instance->run = &run_local;
-    instance->destroy = &destroy_local;
+    instance->destroy = &destroy;
     instance->name = name;
 
     va_list ap;
@@ -37,7 +37,7 @@ SuiteT* Suite(char * const name, ...) {
     return instance;
 }
 
-int run_local(SuiteT *suite) {
+static int run_local(SuiteT *suite) {
 
     pid_t pid;
     int test_idx = 0;
@@ -58,12 +58,9 @@ int run_local(SuiteT *suite) {
             waitpid(pid, &status, 0);
 
             if (!WIFEXITED(status)) {
-
-                if (WIFSIGNALED(status) && WTERMSIG(status) == SIGABRT) {
-                    printf("F");
-                    failure_count++;
-                }
-
+                printf("Error code %d\n", status);
+                printf("F");
+                failure_count++;
             } 
         }
     }
@@ -73,7 +70,7 @@ int run_local(SuiteT *suite) {
     return failure_count;
 }
 
-void destroy_local(SuiteT *suite) {
+static void destroy(SuiteT *suite) {
     free(suite->tests);
     free(suite);
 }

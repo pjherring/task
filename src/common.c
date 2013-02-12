@@ -1,8 +1,6 @@
-#include "sketch.h"
+#include "common.h"
 
-int main() {
-    PRINT_STACK(10);
-}
+size_t kVoidPointerSize = sizeof(void*);
 
 void print_stack(void ** arr, int stack_size) {
     size_t i;
@@ -16,9 +14,6 @@ void print_stack(void ** arr, int stack_size) {
 
     for (i = 0; i < size; i++) {
         printf("%s\n", strings[i]);
-        char syscom[256];
-        sprintf(syscom, "atos %p -e sighandler", strings[i]);
-        system(syscom);
     }
 
     free(strings);

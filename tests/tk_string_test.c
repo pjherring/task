@@ -3,12 +3,13 @@
 #include "tester.h"
 #include "../src/logger.h"
 
-void test_substr() {
+static void test_substr() {
     char * str = "my super string";
     int len = 5;
     char * dest = malloc(sizeof(char) * len);
     substr(dest, str, 3, len);
     assertStrEqual("super", dest);
+    free(dest);
 }
 
 void test_strsplit() {
@@ -19,6 +20,7 @@ void test_strsplit() {
     assertStrEqual("this", parts[0]);
     assertStrEqual("is", parts[1]);
     assertStrEqual("str", parts[2]);
+    free(parts);
 }
 
 void test_stroccur() {
@@ -37,10 +39,11 @@ void test_split_arr_size() {
 
 void test_strlower() {
     char * const str = "ThIs 2 is My STRing!";
-    char * const to_test = malloc(sizeof(char) * strlen(str));
+    char * const to_test = malloc(sizeof(char) * (strlen(str) + 1));
     strcpy(to_test, str);
     strlower(to_test);
     assertStrEqual("this 2 is my string!", to_test);
+    free(to_test);
 }
 
 SuiteT* Suite_tk_string() {

@@ -17,7 +17,7 @@ void assert_that(int expression, char * fmt, ...) {
 
         char * error_str = create_error_string(fmt, args);
         printf("%s", error_str);
-        assert(false);
+        abort(void);
     }
 }
 

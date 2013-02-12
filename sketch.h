@@ -1,14 +1,16 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <unistd.h>
-#include <assert.h>
-#include <Block.h>
 
-#ifndef TK_SUITE
-#define TK_SUITE
+#ifndef TK_SKECTH
+#define TK_SKETCH
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <execinfo.h>
+
+#define PRINT_STACK(size) do { \
+    void *arr[size]; \
+    print_stack(arr, size); \
+} while(0);
+
+void print_stack(void ** arr, int stack_size);
 
 #endif
