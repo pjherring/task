@@ -8,6 +8,10 @@ typedef struct ListT {
     void ** last_value;
     int size;
     /*
+     * The total number of bytes allocated to values;
+     */
+    int capacity;
+    /*
      * Frees the values and the list
      */
     void (*destroy)(struct ListT*);

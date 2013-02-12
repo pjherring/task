@@ -9,6 +9,7 @@
 #include <signal.h>
 
 #include "assertions.h"
+#include "logger.h"
 
 #define PRINT_STACK(size) do { \
     void *arr[size]; \

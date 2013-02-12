@@ -10,8 +10,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <assert.h>
-#include "../src/logger.h"
-#include "../common/ptr.h"
+#include "../src/common.h"
 
 typedef void(*test_case_fp)(void);
 

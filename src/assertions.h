@@ -15,9 +15,10 @@ void assert_that(int expression, char * const fmt, ...);
 #define assert_that(expression, fmt, ...) \
     if (!(expression)) { \
         printf("\n"); \
+        PRINT_STACK(10); \
+        printf("\n"); \
         printf(fmt, ##__VA_ARGS__); \
         printf("\n"); \
-        PRINT_STACK(10); \
         assert(expression); \
     } 
 

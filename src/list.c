@@ -4,43 +4,53 @@ static void* list_object_at_index(ListT* self, int idx);;
 static void destroy(ListT* self);
 static void append(ListT*, void*);
 
-ListT* List(int begin_size, ...) {
-
-    ListT* instance = malloc(kListSize);
-    int max = begin_size;
-
-    instance->values = malloc(sizeof(void*) * max);
+ListT* List(int initial_capacity, ...) {
+    ListT* self;
+    int capacity;
 
     va_list args;
-    va_start(args, begin_size);
     void * arg;
-    int values_idx = 0;
 
-    while ((arg = va_arg(args, void*)) != NULL) {
-        instance->values[values_idx++] = arg;
+    int values_idx;
 
-        if (values_idx == max) {
-            max += begin_size;
-            instance->values = realloc(instance->values, sizeof(void*) * max);
-        }
+    self = malloc(kListSize);
+    capacity = initial_capacity;
+    self->values = malloc(kVoidPointerSize * capacity);
+    
+    va_start(args, initial_capacity);
 
-        if (values_idx + 1 == max) {
-            instance->last_value = &arg;
+    for (values_idx = 0; (arg = va_arg(args, void*)) != NULL; values_idx++) {
+
+        self->values[values_idx] = arg;
+
+        if (values_idx == capacity) {
+            capacity += initial_capacity;
+            self->values = realloc(
+                self->values, kVoidPointerSize * capacity
+            );
         }
 
     }
 
-    if (values_idx == max) {
-        instance->values = realloc(instance->values, sizeof(void*) * (max + 1));
+    //we need to NULL terminate this list, but we need to make sure we have
+    //enough memory to do so
+    if (values_idx == capacity) {
+        self->values = 
+            realloc(self->values, kVoidPointerSize * (capacity + 1));
     }
+    
+    self->values[values_idx] = NULL;
+    self->capacity = capacity;
+    self->size = values_idx;
 
-    instance->values[values_idx] = NULL;
-    instance->size = values_idx;
-    instance->destroy = &destroy;
-    instance->object_at_index = &list_object_at_index;
-    instance->append = &append;
+    if (self->size > 0) {
+        self->last_value = self->values + (self->size - 1);
+    }
+    self->destroy = &destroy;
+    self->object_at_index = &list_object_at_index;
+    self->append = &append;
 
-    return instance;
+    return self;
 }
 
 
@@ -56,4 +66,14 @@ static void destroy(ListT* list) {
 
 static void append(ListT* self, void * obj) {
     __assert_that(self != NULL);
+
+    //do we need more capacity
+    if (self->capacity == self->size) {
+        self->capacity *= 1.5;
+        self->values = realloc(self->values, kVoidPointerSize * self->capacity);
+    }
+
+    self->values[self->size] = obj;
+    self->size++;
+    self->last_value++;
 }

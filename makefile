@@ -8,9 +8,11 @@ CC = clang -Werror
 
 .PHONY : task compile clean test compile_tests sketch clean_tests test_debug scan
 
-task : compile
-	$(CC) -o $(MAIN_EXEC) tmp/*.o
+task : build
 	./$(MAIN_EXEC)
+
+build : compile
+	$(CC) -o $(MAIN_EXEC) tmp/*.o
 
 scan : 
 	scan-build $(CC) $(SRC_FILES)
@@ -34,15 +36,18 @@ clean :
 
 test_debug : 
 	$(CC) -o $(TEST_EXEC) -g $(TEST_SRC_FILES) $(SRC_FILES)
-	-gdb $(TEST_EXEC)
+	-gdb $(TEST_EXEC) core
 	$(MAKE) clean_debug_tests
 
-test : compile_tests
-	$(CC) -o $(TEST_EXEC) tmp/test/*.o
+
+test : build_test
 	@echo "\nTESTING\n"
 	-./$(TEST_EXEC)
 	@echo "\nDONE TESTING\n"
 	$(MAKE) clean_tests
+
+build_test : compile_tests
+	$(CC) -o $(TEST_EXEC) tmp/test/*.o
 
 compile_tests : compile
 	$(CC) -c $(TEST_SRC_FILES)

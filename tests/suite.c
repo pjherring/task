@@ -2,6 +2,8 @@
 
 static int run_local(SuiteT *suite);
 static void destroy(SuiteT *suite);
+static void signal_callback_handler(int signum);
+static int failure;
 
 static const int kTestsDefaultSize = 10;
 
@@ -44,24 +46,17 @@ static int run_local(SuiteT *suite) {
     int failure_count = 0;
     test_case_fp test_case;
 
+    signal(SIGABRT, signal_callback_handler);
+
     while ( (test_case = suite->tests[test_idx++]) != NULL) {
+        failure = NO;
+        test_case();
 
-        pid = fork();
-
-        if (pid == 0) {
-            //child
-            test_case();
-            printf(".");
-            exit(0);
+        if (failure == YES) {
+            failure_count++;
+            printf("F");
         } else {
-            int status;
-            waitpid(pid, &status, 0);
-
-            if (!WIFEXITED(status)) {
-                printf("Error code %d\n", status);
-                printf("F");
-                failure_count++;
-            } 
+            printf(".");
         }
     }
 
@@ -73,4 +68,8 @@ static int run_local(SuiteT *suite) {
 static void destroy(SuiteT *suite) {
     free(suite->tests);
     free(suite);
+}
+
+static void signal_callback_handler(int signum) {
+    failure = YES;
 }
