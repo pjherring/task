@@ -1,9 +1,5 @@
 #include "list.h"
 
-static void* list_object_at_index(ListT* self, int idx);;
-static void destroy(ListT* self);
-static void append(ListT*, void*);
-
 ListT* List(int initial_capacity, ...) {
     ListT* self;
     int capacity;
@@ -15,7 +11,7 @@ ListT* List(int initial_capacity, ...) {
 
     self = malloc(kListSize);
     capacity = initial_capacity;
-    self->values = malloc(kVoidPointerSize * capacity);
+    self->values = calloc(capacity, kVoidPointerSize);
     
     va_start(args, initial_capacity);
 
@@ -46,25 +42,22 @@ ListT* List(int initial_capacity, ...) {
     if (self->size > 0) {
         self->last_value = self->values + (self->size - 1);
     }
-    self->destroy = &destroy;
-    self->object_at_index = &list_object_at_index;
-    self->append = &append;
 
     return self;
 }
 
 
-static void * list_object_at_index(ListT* self, int idx) {
+void * list_obj_at_idx(ListT* self, int idx) {
     assert(idx < self->size);
     return self->values[idx];
 }
 
-static void destroy(ListT* list) {
+void list_destroy(ListT* list) {
     free(list->values);
     free(list);
 }
 
-static void append(ListT* self, void * obj) {
+void list_append(ListT* self, void * obj) {
     __assert_that(self != NULL);
 
     //do we need more capacity

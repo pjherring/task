@@ -1,7 +1,5 @@
 #include "suite.h"
 
-static int run_local(SuiteT *suite);
-static void destroy(SuiteT *suite);
 static void signal_callback_handler(int signum);
 static int failure;
 
@@ -10,8 +8,6 @@ static const int kTestsDefaultSize = 10;
 SuiteT* Suite(char * const name, ...) {
     SuiteT *instance = malloc(suite_size);
 
-    instance->run = &run_local;
-    instance->destroy = &destroy;
     instance->name = name;
 
     va_list ap;
@@ -39,7 +35,7 @@ SuiteT* Suite(char * const name, ...) {
     return instance;
 }
 
-static int run_local(SuiteT *suite) {
+int suite_run(SuiteT *suite) {
 
     pid_t pid;
     int test_idx = 0;
@@ -65,7 +61,7 @@ static int run_local(SuiteT *suite) {
     return failure_count;
 }
 
-static void destroy(SuiteT *suite) {
+void suite_destroy(SuiteT *suite) {
     free(suite->tests);
     free(suite);
 }

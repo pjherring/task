@@ -1,9 +1,10 @@
 MAIN_EXEC = task
 TEST_EXEC = test
 
-SRC_FILES = src/tk_string.c src/logger.c src/common.c src/list.c src/dict.c src/command.c
+SRC_FILES = src/tk_string.c src/logger.c src/common.c src/list.c src/dict.c src/task.c
 TEST_SRC_FILES = tests/tester.c tests/suite.c tests/tk_string_test.c tests/list_test.c \
-				tests/dict_test.c tests/command_test.c
+				tests/dict_test.c tests/task_test.c
+LINKED_LIB = -ljansson
 CC = clang -Werror
 
 .PHONY : task compile clean test compile_tests sketch clean_tests test_debug scan
@@ -12,7 +13,7 @@ task : build
 	./$(MAIN_EXEC)
 
 build : compile
-	$(CC) -o $(MAIN_EXEC) tmp/*.o
+	$(CC) -o $(MAIN_EXEC) tmp/*.o $(LINKED_LIB)
 
 scan : 
 	scan-build $(CC) $(SRC_FILES)
@@ -47,7 +48,7 @@ test : build_test
 	$(MAKE) clean_tests
 
 build_test : compile_tests
-	$(CC) -o $(TEST_EXEC) tmp/test/*.o
+	$(CC) -o $(TEST_EXEC) tmp/test/*.o $(LINKED_LIB)
 
 compile_tests : compile
 	$(CC) -c $(TEST_SRC_FILES)

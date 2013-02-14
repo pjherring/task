@@ -11,14 +11,14 @@ int main() {
 
     while ( (current_suite = suites[suite_idx++]) != NULL) {
         printf("\nTesting %s\n", current_suite->name);
-        int failure_count = current_suite->run(current_suite);
+        int failure_count = suite_run(current_suite);
 
         if (failure_count > 0) {
             printf("Failures!\n");
         }
 
         suite_result += failure_count;
-        current_suite->destroy(current_suite);
+        suite_destroy(current_suite);
     }
 
     free(suites);
@@ -35,7 +35,7 @@ SuiteT** get_suites() {
     suites[0] = Suite_tk_string();
     suites[1] = Suite_list();
     suites[2] = Suite_dict();
-    suites[3] = Suite_command();
+    suites[3] = Suite_task();
     suites[4] = NULL;
 
     return suites;

@@ -20,24 +20,28 @@ typedef struct DictionaryT{
     DictionaryNodeT **list;
     int capacity;
     int size;
-    /*
-     * Destroy this struct. Will free keys, values, and the struct
-     */
-    void (*destroy)(struct DictionaryT*);
-    /*
-     * Get the object that is matched with @param key
-     */
-    void (*add)(struct DictionaryT*, char * key, void * value);
-    /*
-     * Find object at key
-     */
-    void* (*at)(struct DictionaryT*, char * key);
-
 } DictionaryT;
 
-DictionaryT* Dictionary();
 
 static size_t kDictSize = sizeof(DictionaryT);
 static size_t kNodeSize = sizeof(DictionaryNodeT);
+
+/*
+ * Constructor for dictionary
+ */
+DictionaryT* Dict();
+
+/*
+ * Destroy the dictionary
+ */
+void dict_destroy(DictionaryT*);
+/*
+ * Add a key val pair
+ */
+void dict_add(DictionaryT*, char*, void*);
+/*
+ * Fetch object at key
+ */
+void* dict_obj_at(DictionaryT*, char*);
 
 #endif

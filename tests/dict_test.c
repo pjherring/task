@@ -13,28 +13,28 @@ SuiteT* Suite_dict() {
 }
 
 static void test_add() {
-    DictionaryT* dict = Dictionary();
-    dict->add(dict, "key", "some value");
+    DictionaryT* dict = Dict();
+    dict_add(dict, "key", "some value");
     assert_that(dict->size == 1, "size is %d", dict->size);
-    dict->destroy(dict);
+    dict_destroy(dict);
 }
 
 static void test_at() {
-    DictionaryT* dict = Dictionary();
-    dict->add(dict, "key", "value");
+    DictionaryT* dict = Dict();
+    dict_add(dict, "key", "value");
     assert_that(dict->size == 1, "size is %d", dict->size);
-    char * value = dict->at(dict, "key");
+    char * value = dict_obj_at(dict, "key");
     assert_strs_equal("value", value, "incorrect, should be '%s' but is '%s'", "value", value);
-    dict->destroy(dict);
+    dict_destroy(dict);
 }
 
 static void test_init() {
-    DictionaryT *instance = Dictionary();
+    DictionaryT *instance = Dict();
 
     assert_that(instance != NULL, "instance is NULL", NULL);
     assert_that(instance->list != NULL, "instance->list is NULL", NULL);
     assert_that(instance->capacity == 100, "capacity is %d", instance->capacity);
     assert_that(instance->size == 0, "size is %d", instance->size);
 
-    instance->destroy(instance);
+    dict_destroy(instance);
 }

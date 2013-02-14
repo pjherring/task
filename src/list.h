@@ -11,22 +11,6 @@ typedef struct ListT {
      * The total number of bytes allocated to values;
      */
     int capacity;
-    /*
-     * Frees the values and the list
-     */
-    void (*destroy)(struct ListT*);
-    /*
-     * returns the object at the specified index. If @param idx is out
-     * of range an ABORT signal is raised.
-     */
-    void* (*object_at_index)(struct ListT*, int idx);
-    /*
-     * This method will add an object at the end of the list. If more
-     * memory is needed more is allocated
-     * 
-     * @param obj The object to append
-     */
-    void (*append)(struct ListT*, void*);
 
 } ListT;
 
@@ -42,5 +26,26 @@ static size_t kListSize = sizeof(ListT);
  *     
  */
 ListT* List(int begin_size, ...);
+
+/*
+ * returns the object at the specified index. If @param idx is out
+ * of range an ABORT signal is raised.
+ */
+void * list_obj_at_idx(ListT*, int);
+
+
+/*
+ * Frees the values then the list
+ */
+void list_destroy(ListT*);
+
+
+/*
+ * This method will add an object at the end of the list. If more
+ * memory is needed more is allocated
+ * 
+ * @param obj The object to append
+ */
+void list_append(ListT*, void*);
 
 #endif

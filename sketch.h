@@ -4,13 +4,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <execinfo.h>
 
-#define PRINT_STACK(size) do { \
-    void *arr[size]; \
-    print_stack(arr, size); \
-} while(0);
+typedef struct ExampleT {
+    char * name;
+    void (^print_name)();
+} ExampleT;
 
-void print_stack(void ** arr, int stack_size);
+#define before_arrow(obj) patsubst(#obj, '-\>.*', '')
+#define __(method_call) before_arrow(method_call)
 
 #endif

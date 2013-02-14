@@ -1,28 +1,21 @@
 #include "dict.h"
 
-static void destroy(DictionaryT* self);
-static void add(DictionaryT* self, char * key, void * value);
-static void* at(DictionaryT*, char *);
-
-uint32_t hash(char * key, int capacity);
+static uint32_t hash(char * key, int capacity);
 
 static const int initCapacity = 100;
 
-DictionaryT* Dictionary() {
+DictionaryT* Dict() {
 
     DictionaryT *self = malloc(kDictSize);
     self->list = calloc(initCapacity, kNodeSize);
     self->capacity = initCapacity;
     self->size = 0;
-    self->destroy = &destroy;
-    self->add = &add;
-    self->at = &at;
 
     return self;
 }
 
 
-static void add(DictionaryT* self, char * key, void * value) {
+void dict_add(DictionaryT* self, char * key, void * value) {
     uint32_t hash_value = hash(key, self->capacity);
 
     if (self->list[hash_value]) {
@@ -39,7 +32,7 @@ static void add(DictionaryT* self, char * key, void * value) {
 }
 
 
-static void destroy(DictionaryT* self) {
+void dict_destroy(DictionaryT* self) {
     DictionaryNodeT *node;
     int i;
 
@@ -51,7 +44,7 @@ static void destroy(DictionaryT* self) {
 }
 
 
-static void* at(DictionaryT* self, char * key) {
+void* dict_obj_at(DictionaryT* self, char * key) {
 
     uint32_t hash_value = hash(key, self->capacity);
 
@@ -63,7 +56,7 @@ static void* at(DictionaryT* self, char * key) {
     return node->value;
 }
 
-uint32_t hash(char * key, int capacity) {
+static uint32_t hash(char * key, int capacity) {
 
     uint32_t hash_value;
 

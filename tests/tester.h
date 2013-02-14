@@ -12,6 +12,6 @@
 SuiteT* Suite_tk_string();
 SuiteT* Suite_list();
 SuiteT* Suite_dict();
-SuiteT* Suite_command();
+SuiteT* Suite_task();
 
 #endif
