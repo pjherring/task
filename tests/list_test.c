@@ -4,10 +4,11 @@
 static void test_init();
 static void test_obj_at_idx();
 static void test_append();
+static void test_index_of();
 
 SuiteT* Suite_list() {
     SuiteT *suite = Suite("list tests", &test_init, &test_obj_at_idx,
-        &test_append, NULL);
+        &test_append, &test_index_of, NULL);
     return suite;
 }
 
@@ -74,3 +75,17 @@ static void test_append() {
     assert_that(list->capacity == 4, "incorrect capacity %d", list->capacity);
 }
 
+
+static void test_index_of() {
+    char* one = "one";
+    char* two = "two";
+    char* three= "three";
+    ListT* list = List(10, NULL);
+    list_append(list, one);
+    list_append(list, two);
+    list_append(list, three);
+
+    assert_that(0 == list_index_of(list, one), "incorrect index %d", list_index_of(list, one));
+    assert_that(1 == list_index_of(list, two), "incorrect index %d", list_index_of(list, two));
+    assert_that(2 == list_index_of(list, three), "incorrect index %d", list_index_of(list, three));
+}

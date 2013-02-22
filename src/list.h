@@ -48,4 +48,9 @@ void list_destroy(ListT*);
  */
 void list_append(ListT*, void*);
 
+/*
+ * Find the index of a certain object
+ */
+int list_index_of(ListT*, void*);
+
 #endif

@@ -13,6 +13,7 @@ SuiteT* Suite_tk_string();
 SuiteT* Suite_list();
 SuiteT* Suite_dict();
 SuiteT* Suite_task();
+SuiteT* Suite_execute();
 
 char * make_str(const char* str);
 

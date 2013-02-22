@@ -75,3 +75,11 @@ void list_append(ListT* self, void * obj) {
     self->last_value = &self->values[self->size];
     self->size++;
 }
+
+int list_index_of(ListT* self, void* obj) {
+    int value_idx;
+
+    for (value_idx = 0; value_idx < self->size && self->values[value_idx] != obj; value_idx++) ;
+
+    return value_idx;
+}

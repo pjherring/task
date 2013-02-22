@@ -39,6 +39,10 @@ typedef struct TaskT {
      * The status of the task
      */
     int is_complete;
+    /*
+     * Parent of this task
+     */
+    struct TaskT* parent;
 } TaskT;
 
 

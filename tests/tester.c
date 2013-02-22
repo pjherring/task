@@ -31,12 +31,13 @@ int main() {
 }
 
 SuiteT** get_suites() {
-    SuiteT** suites = malloc(sizeof(SuiteT *) * 5);
+    SuiteT** suites = malloc(sizeof(SuiteT *) * 6);
     suites[0] = Suite_tk_string();
     suites[1] = Suite_list();
     suites[2] = Suite_dict();
     suites[3] = Suite_task();
-    suites[4] = NULL;
+    suites[4] = Suite_execute();
+    suites[5] = NULL;
 
     return suites;
 }

@@ -9,7 +9,7 @@ static const char* kWelcomeMessage =
     "a(dd) - add a note to the current task\n"
     "c(hild) - add a child to this task\n"
     "l(oad) - load a task file\n"
-    "s(ave) - save a task file\n"
+    "w(rite) - save a task file\n"
     "q(uit) - quit\n";
     
     
@@ -52,14 +52,14 @@ void init_command_dict() {
     dict_add(kCommandStrDict, "finish", &execute_finish);
     dict_add(kCommandStrDict, "s", &execute_show);
     dict_add(kCommandStrDict, "show", &execute_show);
-    dict_add(kCommandStrDict, "a", &execute_add);
-    dict_add(kCommandStrDict, "add", &execute_add);
+    dict_add(kCommandStrDict, "a", &execute_add_note);
+    dict_add(kCommandStrDict, "add", &execute_add_note);
     dict_add(kCommandStrDict, "c", &execute_child);
     dict_add(kCommandStrDict, "child", &execute_child);
     dict_add(kCommandStrDict, "l", &execute_load);
     dict_add(kCommandStrDict, "load", &execute_load);
-    dict_add(kCommandStrDict, "s", &execute_save);
-    dict_add(kCommandStrDict, "save", &execute_save);
+    dict_add(kCommandStrDict, "w", &execute_save);
+    dict_add(kCommandStrDict, "write", &execute_save);
 }
 
 
@@ -73,7 +73,7 @@ void execute_command(char* command, ListT* tasks, TaskT** current) {
     space_idx = strstr(command, " ") - command;
 
     if (space_idx > 0) {
-        command_token = malloc(sizeof(char) * space_idx);
+        command_token = malloc(sizeof(char) * (space_idx + 1));
         strncpy(command_token, command, space_idx);
     } else {
         command_token = command;

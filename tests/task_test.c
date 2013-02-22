@@ -55,6 +55,8 @@ static void test_add_child() {
 
     assert(parent->children != NULL);
     task_add_child(parent, child);
+    _assert_that(child->parent != NULL, "child does not have a parent");
+    _assert_that(child->parent == parent, "child's parent is not 'parent'");
     ListT *children = parent->children;
     assert(children != NULL);
     assert(children->size == 1);

@@ -48,8 +48,8 @@ void task_destroy(TaskT* self) {
     for (note_idx = 0; note_idx < self->notes->size; note_idx++) {
         free(list_obj_at_idx(self->notes, note_idx));
     }
-    list_destroy(self->notes);
 
+    list_destroy(self->notes);
     list_destroy(self->children);
 
     free(self->text);
@@ -68,7 +68,9 @@ void task_complete(TaskT* self) {
 }
 
 void task_add_child(TaskT* self, TaskT* child) {
+    assert(self != NULL && child != NULL);
     list_append(self->children, child);
+    child->parent = self;
 }
 
 static size_t kJsonFlags = JSON_INDENT(4) | JSON_PRESERVE_ORDER;
