@@ -53,6 +53,8 @@ void * list_obj_at_idx(ListT* self, int idx) {
 }
 
 void list_destroy(ListT* list) {
+    int value_idx;
+
     free(list->values);
     free(list);
 }
@@ -62,11 +64,14 @@ void list_append(ListT* self, void * obj) {
 
     //do we need more capacity
     if (self->capacity == self->size) {
-        self->capacity *= 1.5;
-        self->values = realloc(self->values, kVoidPointerSize * self->capacity);
+        int new_capacity;
+
+        new_capacity = self->capacity * 2;
+        self->values = realloc(self->values, kVoidPointerSize * new_capacity);
+        self->capacity = new_capacity;
     }
 
     self->values[self->size] = obj;
+    self->last_value = &self->values[self->size];
     self->size++;
-    self->last_value++;
 }

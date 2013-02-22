@@ -17,6 +17,7 @@ const char * kTaskJsonIsCompleteKey = "is_complete";
  */
 static void write_task(json_t *object, TaskT* task);
 static void write_children_to_task(json_t *, TaskT*);
+static TaskT* read_from_json(json_t*);
 
 TaskT* Task(char* const task_text) {
 
@@ -40,8 +41,18 @@ TaskT* Task(char* const task_text) {
  */
 void task_destroy(TaskT* self) {
     assert(self != NULL);
-    free(self->text);
+
+    int note_idx;
+    int child_idx;
+
+    for (note_idx = 0; note_idx < self->notes->size; note_idx++) {
+        free(list_obj_at_idx(self->notes, note_idx));
+    }
     list_destroy(self->notes);
+
+    list_destroy(self->children);
+
+    free(self->text);
     free(self);
 }
 
@@ -62,16 +73,17 @@ void task_add_child(TaskT* self, TaskT* child) {
 
 static size_t kJsonFlags = JSON_INDENT(4) | JSON_PRESERVE_ORDER;
 
-void task_write(ListT* tasks, FILE* file) {
+int task_write(ListT* tasks, char* const filename) {
     assert(tasks->size > 0);
+    assert(filename != NULL);
+
 
     json_t *task_json_arr;;
     int write_result;
     int task_idx;
+    FILE *to_write;
 
     task_json_arr = json_array();
-    DEBUG("number of tasks %d", tasks->size);
-
     for (task_idx = 0; task_idx < tasks->size; task_idx++) {
         json_t* task_json_obj;
         TaskT* task;
@@ -79,29 +91,146 @@ void task_write(ListT* tasks, FILE* file) {
         task_json_obj = json_object();
         task = list_obj_at_idx(tasks, task_idx);
 
-        DEBUG("task idx %d", task_idx);
-        DEBUG("task text %s", task->text);
-
         write_task(task_json_obj, task);
 
         json_array_append(task_json_arr, task_json_obj);
         json_decref(task_json_obj);
     }
-    write_result = json_dumpf(task_json_arr, file, kJsonFlags);
+
+    write_result = json_dump_file(task_json_arr, filename, kJsonFlags);
     _assert_that(write_result == 0, "failed to write json to file");
 
     //freeing the memory for json
     json_decref(task_json_arr);
+
+    return 0;
+
 }
 
 
-ListT* task_read(FILE *file) {
-    return NULL;
+ListT* task_read(char * const filename) {
+    assert(filename != NULL);
+    ListT* tasks;
+    json_t* task_json_arr;
+    json_error_t json_error;
+    size_t task_size;
+    int task_idx;
+
+    task_json_arr = json_load_file(filename, 0, &json_error);
+
+    if (!task_json_arr) {
+        printf("Error loading json: \"%s\"\n", json_error.text);
+        return NULL;
+    }
+
+    if (!json_is_array(task_json_arr)) {
+        printf("Error loading json: should be an array!\n");
+        return NULL;
+    }
+
+    task_size = json_array_size(task_json_arr);
+    tasks = List(task_size, NULL);
+
+    for (task_idx = 0; task_idx < task_size; task_idx++) {
+        json_t* task_json;
+        TaskT* task;
+
+        task_json = json_array_get(task_json_arr, task_idx);
+
+        if (!json_is_object(task_json)) {
+            printf("Error! one of the tasks is not an object!\n");
+        }
+
+        task = read_from_json(task_json);
+
+        if (task == NULL) {
+            printf("Error converting task.\n");
+        }
+
+        list_append(tasks, task);
+    }
+
+    json_decref(task_json_arr);
+
+    return tasks;
 }
 
 /*
  * Begin PRIVATE FUNCTIONS
  */
+
+static TaskT* read_from_json(json_t* json_obj) {
+    TaskT* task;
+    json_t* text;
+    char* text_str;
+    json_t* is_complete;
+    json_t* note_arr;
+    json_t* child_arr;
+
+    text = json_object_get(json_obj, kTaskJsonTextKey);
+    is_complete = json_object_get(json_obj, kTaskJsonIsCompleteKey);
+    note_arr = json_object_get(json_obj, kTaskJsonNotesKey);
+    child_arr = json_object_get(json_obj, kTaskJsonChildrenKey);
+    
+    if (text == NULL || is_complete == NULL || !json_is_string(text)) {
+        _DEBUG("Invalid task object.\n");
+        return NULL;
+    }
+
+    text_str = (char*) json_string_value(text);
+    task = Task(text_str);
+    task->is_complete = json_is_true(is_complete) ? YES : NO;
+
+    if (note_arr != NULL && json_is_array(note_arr)) {
+        size_t notes_size;
+        int note_idx;
+
+        notes_size = json_array_size(note_arr);
+
+        for (note_idx = 0; note_idx < notes_size; note_idx++) {
+            json_t* note_json;
+
+            note_json = json_array_get(note_arr, note_idx);
+
+            if (json_is_string(note_json)) {
+                const char * json_str_value;
+                char * note_str;
+
+                json_str_value = json_string_value(note_json);
+
+                //we have to copy because 'json_str_value' will be dereferenced
+                note_str = malloc(sizeof(char) * (strlen(json_str_value) + 1));
+                strcpy(note_str, json_str_value);
+                task_add_note(task, note_str);
+            }
+
+        }
+
+    }
+
+    if (child_arr != NULL && json_is_array(child_arr)) {
+        size_t child_arr_size;
+        int child_idx;
+
+        child_arr_size = json_array_size(child_arr);
+
+        for (child_idx = 0; child_idx < child_arr_size; child_idx++) {
+            json_t* child_json;
+            TaskT* child_task;
+
+            child_json = json_array_get(child_arr, child_idx);
+            
+            if (child_json != NULL) {
+                child_task = read_from_json(child_json);
+                task_add_child(task, child_task);
+            }
+
+        }
+
+    }
+
+    return task;
+}
 
 
 /*
@@ -181,3 +310,6 @@ static void write_children_to_task(json_t* json_obj, TaskT* task) {
         json_decref(children_json_arr);
     }
 }
+/*
+ * End private functions
+ */

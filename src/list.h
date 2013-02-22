@@ -4,8 +4,8 @@
 #include "common.h"
 
 typedef struct ListT {
-    void **values;
-    void ** last_value;
+    void** values;
+    void** last_value;
     int size;
     /*
      * The total number of bytes allocated to values;

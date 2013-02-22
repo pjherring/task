@@ -14,4 +14,6 @@ SuiteT* Suite_list();
 SuiteT* Suite_dict();
 SuiteT* Suite_task();
 
+char * make_str(const char* str);
+
 #endif

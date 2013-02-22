@@ -1,65 +1,40 @@
-MAIN_EXEC = task
-TEST_EXEC = test
+main_exec = task
+test_exec = test
 
-SRC_FILES = src/tk_string.c src/logger.c src/common.c src/list.c src/dict.c src/task.c
-TEST_SRC_FILES = tests/tester.c tests/suite.c tests/tk_string_test.c tests/list_test.c \
-				tests/dict_test.c tests/task_test.c
-LINKED_LIB = -ljansson
-CC = clang -Werror
+src = src/tk_string.c src/logger.c src/common.c src/list.c src/dict.c \
+	src/task.c src/execute.c src/user_io.c
+test_src = tests/tester.c tests/suite.c tests/tk_string_test.c \
+	tests/list_test.c tests/dict_test.c tests/task_test.c
 
-.PHONY : task compile clean test compile_tests sketch clean_tests test_debug scan
+objects = src/tk_string.o src/logger.o src/common.o src/list.o src/dict.o \
+	src/task.o src/execute.o src/user_io.o
+main = src/main.o
+test_objects = tests/tester.o tests/suite.o tests/tk_string_test.o \
+	tests/list_test.o tests/dict_test.o tests/task_test.o
 
-task : build
-	./$(MAIN_EXEC)
+linked_libs = -ljansson
+CC = gcc
 
-build : compile
-	$(CC) -o $(MAIN_EXEC) tmp/*.o $(LINKED_LIB)
+task: $(objects)
+	$(CC) -o $(main_exec) -g $(main) $(objects) $(linked_libs)
 
-scan : 
-	scan-build $(CC) $(SRC_FILES)
+test: $(test_objects) $(objects)
+	$(CC) -o $(test_exec) -g $(test_objects) $(objects) $(linked_libs)
 
-scan_tests :
-	scan-build $(CC) $(TEST_SRC_FILES) $(SRC_FILES)
+memcheck_tests: 
+	$(CC) -g -o $(test_exec) $(src) $(test_src) $(linked_libs) 
+	valgrind --dsymutil=yes --tool=Memcheck ./$(test_exec)
 
-sketch :
-	$(CC) -o sketch sketch.c
-	@./sketch
-	-rm sketch
+.PHONY : clean clean_tests run_tests
 
-compile :
-	$(CC) -c $(SRC_FILES)
-	-mkdir -p tmp
-	-mv *.o tmp
+clean: 
+	-rm $(objects)
+	-rm $(main_exec)
 
-clean :
-	rm -rf tmp
-	rm $(MAIN_EXEC)
+clean_tests: 
+	-rm $(test_objects)
+	-rm $(test_exec)
 
-test_debug : 
-	$(CC) -o $(TEST_EXEC) -g $(TEST_SRC_FILES) $(SRC_FILES)
-	-gdb $(TEST_EXEC) core
-	$(MAKE) clean_debug_tests
-
-
-test : build_test
-	@echo "\nTESTING\n"
-	-./$(TEST_EXEC)
-	@echo "\nDONE TESTING\n"
-	$(MAKE) clean_tests
-
-build_test : compile_tests
-	$(CC) -o $(TEST_EXEC) tmp/test/*.o $(LINKED_LIB)
-
-compile_tests : compile
-	$(CC) -c $(TEST_SRC_FILES)
-	-mkdir -p tmp/test
-	-mv *.o tmp/test
-	-cp tmp/*.o tmp/test
-
-clean_tests :
-	rm -rf tmp
-	rm $(TEST_EXEC)
-	rm -rf test.dSYM/
-
-clean_debug_tests :
-	rm $(TEST_EXEC)
+run_tests: test
+	-./$(test_exec)
+	-$(MAKE) clean_tests

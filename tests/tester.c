@@ -40,3 +40,11 @@ SuiteT** get_suites() {
 
     return suites;
 }
+
+char* make_str(const char* str) {
+    size_t size;
+    char* new_str;
+    new_str = malloc(sizeof(char) * (strlen(str) + 1));
+    strcpy(new_str, str);
+    return new_str;
+}

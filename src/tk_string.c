@@ -1,24 +1,38 @@
 #include "tk_string.h"
 
-void substr(char * dest, char * str, int start, int len) {
-    strncpy(dest, &str[start], len);
+char* substr(char * str, int start, int substr_len) {
+    char* dest;
+
+    dest = malloc(sizeof(char) * (10));
+    assert_that((substr_len + start) < strlen(str),
+        "the length of the substring plus its start index must be less "
+        "than the length of the total string");
+    memcpy(dest, &str[start], substr_len);
+    dest[substr_len] = '\0';
+    return dest;
 }
 
-void strsplit(char **parts, char * str, char * delim) {
+char** strsplit(char * str, char * delim) {
 
-    int parts_idx = 0;
-    char * str_copy = malloc(sizeof(char) * (strlen(str) + 1));
-    strcpy(str_copy, str);
+    int parts_idx;
+    char* copied;
+    char* token;
+    char** parts;
 
-    char * token = strtok(str_copy, delim);
-    free(str_copy);
+    copied = malloc(sizeof(char) * (strlen(str) + 1));
+    strcpy(copied, str);
 
-    do {
-        parts[parts_idx++] = token;
-        token = strtok(NULL, delim);
-    } while(token != NULL);
+    parts = malloc(split_arr_size(str, delim));
+
+    for(token = strtok(copied, delim), parts_idx = 0; 
+        token != NULL; 
+        token = strtok(NULL, delim), parts_idx++) {
+
+        parts[parts_idx] = token;
+    }
 
     parts[parts_idx] = NULL;
+    return parts;
 }
 
 int stroccur(char * str, char * substr) {

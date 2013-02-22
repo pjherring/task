@@ -11,12 +11,12 @@
 /*
  * Copy the substring of str into dest starting at start with a length of len
  */
-void substr(char * dest, char * str, int start, int len);
+char* substr(char * str, int start, int len);
 
 /*
  * Split the str by the delim. Store in parts.
  */
-void strsplit(char **parts, char * str, char * delim);
+char** strsplit(char * str, char * delim);
 
 /*
  * How many times does the delim happen in the str

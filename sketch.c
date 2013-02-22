@@ -1,10 +1,7 @@
-#include "sketch.h"
-
-ExampleT* create(char *name);
-void print_name(ExampleT *self);
+#include <stdlib.h>
 
 int main() {
-    __(obj->some(1, 2))
+    char* ptr;
+    ptr = malloc(sizeof(char) * 10);
+    return 0;
 }
-
-

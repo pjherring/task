@@ -49,11 +49,14 @@ void task_destroy(TaskT* task);
 void task_add_note(TaskT* task, char* note);
 void task_complete(TaskT* task);
 void task_add_child(TaskT* parent, TaskT* child);
-void task_write(ListT* tasks, FILE *file);
+/*
+ * write json data to a file 
+ */
+int task_write(ListT* tasks, char* const filename);
 /*
  * Read json data from a file to create tasks
  */
-ListT* task_read(FILE *file);
+ListT* task_read(char * const filename);
 
 
 #endif

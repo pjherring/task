@@ -5,18 +5,19 @@
 
 static void test_substr() {
     char * str = "my super string";
-    int len = 5;
-    char * dest = malloc(sizeof(char) * len);
-    substr(dest, str, 3, len);
-    assertStrEqual("super", dest);
+    char* dest = substr(str, 3, 5);
+    assert_strs_equal("super", dest, "'%s' does not equal 'super'", dest);
     free(dest);
 }
 
 void test_strsplit() {
-    char **parts = malloc(sizeof(char *) * 3);
-    char * const str = "this is str";
+
+    char * str = "this is str";
     char * const delim = " ";
-    strsplit(parts, str, delim);
+    char** parts;
+
+    parts = strsplit(str, delim);
+
     assertStrEqual("this", parts[0]);
     assertStrEqual("is", parts[1]);
     assertStrEqual("str", parts[2]);

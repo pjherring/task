@@ -38,6 +38,7 @@ static void test_obj_at_idx() {
 }
 
 static void test_append() {
+
     ListT *list = List(10, "bleh", NULL);
     assert_that(list->size == 1, "size is %d", list->size);
     list_append(list, "something");
@@ -48,8 +49,8 @@ static void test_append() {
     _assert_strs_equal("something", list_obj_at_idx(list, 1),
         "should be 'something'");
     assert_strs_equal(
-        "something", *list->last_value,
-        "incorrect last_value %s", *list->last_value
+        "something", (char* )*list->last_value,
+        "incorrect last_value %s", (char*) *list->last_value
     );
     assert_that(list->capacity == 10, "incorrect capacity %d", list->capacity);
 
@@ -57,16 +58,19 @@ static void test_append() {
 
     list = List(2, "one", "two", NULL);
     assert_that(list->size == 2, "size is %d", list->size);
+    assert_that(list->capacity == 2, "capacity is %d", list->capacity);
+
     list_append(list, "three");
     assert_that(list->size == 3, "size is %d", list->size);
+    assert_that(list->capacity == 4, "capacity is %d", list->capacity);
     _assert_strs_equal(
         "three",
         list_obj_at_idx(list, 2),
         "should be 'three'");
     assert_strs_equal(
-        "three", *list->last_value,
-        "incorrect last_value %s", *list->last_value
+        "three", (char*) *list->last_value,
+        "incorrect last_value %s", (char*) *list->last_value
     );
-    assert_that(list->capacity == 3, "incorrect capacity %d", list->capacity);
+    assert_that(list->capacity == 4, "incorrect capacity %d", list->capacity);
 }
 
