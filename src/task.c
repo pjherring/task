@@ -110,17 +110,18 @@ int task_write(ListT* tasks, char* const filename) {
 
 
 void task_print(TaskT* task) {
-    printf("\n%s\n", task->text);
+    printf("%s\n", task->text);
 
     if (task->notes != NULL && task->notes->size > 0) {
         int note_idx;
         for (note_idx = 0; note_idx < task->notes->size; note_idx++) {
             char* note_str;
             note_str = list_obj_at_idx(task->notes, note_idx);
-            puts(note_str);
+            printf("Note #%d: %s\n", (note_idx + 1), note_str);
         }
+    } else {
+        puts("No Notes");
     }
-    puts("");
 }
 
 

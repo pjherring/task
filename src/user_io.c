@@ -3,7 +3,7 @@
 static const size_t kUserInputInitSize = 100;
 
 void get_user_input_msg(char** command, const char* message) {
-    puts(message);
+    printf("%s", message);
     get_user_input(command);
 }
 

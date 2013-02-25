@@ -44,7 +44,7 @@ void dict_destroy(DictionaryT* self) {
 }
 
 
-void* dict_obj_at(DictionaryT* self, char * key) {
+void* dict_obj_at(DictionaryT* self, char* key) {
 
     uint32_t hash_value = hash(key, self->capacity);
 
@@ -56,12 +56,13 @@ void* dict_obj_at(DictionaryT* self, char * key) {
     return node->value;
 }
 
-static uint32_t hash(char * key, int capacity) {
+static uint32_t hash(char* key, int capacity) {
 
     uint32_t hash_value;
+    int key_idx;
 
-    for (hash_value = 0; *key != '\0'; key++) {
-        hash_value = *key + 31 * hash_value;
+    for (key_idx = 0, hash_value = 0; key[key_idx] != '\0'; key_idx++) {
+        hash_value = key[key_idx] + 31 * hash_value;
     }
 
     return hash_value % capacity;

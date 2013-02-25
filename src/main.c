@@ -9,6 +9,7 @@ static const char* kWelcomeMessage =
     "a(dd) - add a note to the current task\n"
     "l(oad) - load a task file\n"
     "w(rite) - save a task file\n"
+    "p(rint) - print tasks\n"
     "q(uit) - quit\n";
     
     
@@ -17,7 +18,7 @@ void execute_command(char*, ListT*, TaskT**);
 int do_quit(char * command);
 void init_command_dict();
 
-static DictionaryT* kCommandStrDict;
+DictionaryT* kCommandStrDict = NULL;
 
 int main() {
     printf("%s\n\n", kWelcomeMessage);
@@ -28,18 +29,19 @@ int main() {
     TaskT* current;
 
     tasks = List(10, NULL);
+    command = NULL;
+    current = NULL;
 
     init_command_dict();
 
 
 
     while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
-        get_user_input_msg(&command, "What would you like to do?");
+        get_user_input_msg(&command, "\nWhat would you like to do? ");
 
         if (command != NULL && strlen(command) > 0) {
             execute_command(command, tasks, &current);
         }
-        puts(" ");
     }
 
     free(command);
@@ -68,18 +70,18 @@ void init_command_dict() {
 void execute_command(char* command, ListT* tasks, TaskT** current) {
     assert(command != NULL && strlen(command) != 0);
 
-    char* command_token;
-    void (*command_executor)(char*, ListT*, TaskT**);
-    int space_idx;
+    char* command_token = command;
+    void (*command_executor)(char*, ListT*, TaskT**) = NULL;
+    int space_idx = -1;
 
     space_idx = strstr(command, " ") - command;
 
     if (space_idx > 0) {
+        //get the first word
         command_token = malloc(sizeof(char) * (space_idx + 1));
         strncpy(command_token, command, space_idx);
-    } else {
-        command_token = command;
-    }
+
+    } 
 
     command_executor = dict_obj_at(kCommandStrDict, command_token);
 

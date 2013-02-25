@@ -14,8 +14,7 @@ void execute_new(char* command, ListT* tasks, TaskT** current_task) {
 
     //did we just have the command name?
     if (is_command_only(command)) {
-        printf("What do you need to get done?\n");
-        get_user_input(&task_str);
+        get_user_input_msg(&task_str, "What do you need to get done? ");
     } else {
         /*
          * We are copying memory rather than just pointing to the beginning of
@@ -40,26 +39,24 @@ void execute_finish(char* command, ListT* tasks, TaskT** current_task) {
 
     if (*current_task != NULL) {
         TaskT* _current;
+        int task_idx;
 
         _current = *current_task;
+        printf("Finsihing '%s'", _current->text);
         _current->is_complete = YES;
 
-        if (tasks->size > 1) {
+        task_idx = list_index_of(tasks, _current);
 
-            TaskT* task;
-            int task_idx;
+        while (task_idx > 0 && _current->is_complete == YES) {
+            task_idx--;
+            _current = list_obj_at_idx(tasks, task_idx);
+        }
 
-            task_idx = list_index_of(tasks, _current) - 1;
-            task = tasks->values[task_idx];
-
-            while (task->is_complete == YES && task_idx >= 0) {
-                task = tasks->values[task_idx];
-            }
-
-            *current_task = task->is_complete == NO ? task : NULL;
-
-        } else {
+        if (task_idx < 0) {
+            puts("All tasks completed!");
             *current_task = NULL;
+        } else {
+            *current_task = _current;
         }
 
     } else {
@@ -87,6 +84,11 @@ void execute_add_note(char* command, ListT* tasks, TaskT** current_task) {
     assert(command != NULL);
     assert(current_task != NULL);
 
+    if (tasks->size == 0) {
+        puts("No tasks");
+        return;
+    }
+
     char* note;
 
     if (is_command_only(command)) {
@@ -109,8 +111,10 @@ void execute_print(char* command, ListT* tasks, TaskT** current_task) {
     if (tasks->size == 0) {
         puts("No tasks.");
     } else {
+        puts("");
         int task_idx;
         for (task_idx = 0; task_idx < tasks->size; task_idx++) {
+            printf("Task #%d: ", task_idx + 1);
             TaskT* task;
             task = list_obj_at_idx(tasks, task_idx);
             task_print(task);
