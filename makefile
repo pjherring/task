@@ -21,6 +21,8 @@ task: $(objects) $(main)
 test: $(test_objects) $(objects)
 	$(CC) -o $(test_exec) -g $(test_objects) $(objects) $(linked_libs)
 
+debug: 
+	$(CC) -o $(main_exec) -g $(src) $(main) $(linked_libs)
 
 .PHONY : clean clean_tests run_tests memcheck_tests
 
@@ -35,6 +37,7 @@ memcheck:
 clean: 
 	-rm $(objects)
 	-rm $(main_exec)
+	-rm -rf *.DSYM
 
 clean_tests: 
 	-rm $(test_objects)

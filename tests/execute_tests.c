@@ -23,6 +23,7 @@ static void test_new() {
     assert_that(current != NULL, "current is null", NULL);
     assert_strs_equal(current->text, "some", "incorrect text '%s'", current->text);
     assert_that(tasks->size == 1, "incorrect size %d", tasks->size);
+    _assert_that(list_obj_at_idx(tasks, 0) == current, "current is incorrect.");
 
     list_destroy(tasks);
     task_destroy(current);
@@ -75,7 +76,7 @@ static void test_add_note() {
     TaskT* task;
     
     task = Task("this is a task");
-    execute_add_note(make_str("this is a note"), NULL, &task);
+    execute_add_note(make_str("a this is a note"), NULL, &task);
     _assert_that(task->notes != NULL, "notes should not be NULL");
     assert_that(task->notes->size == 1, "incorrect notes size: %d", task->notes->size);
     assert_strs_equal((char*) list_obj_at_idx(task->notes, 0), "this is a note", "incorrect str: '%s'", (char*) list_obj_at_idx(task->notes, 0));

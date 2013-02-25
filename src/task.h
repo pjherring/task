@@ -1,11 +1,14 @@
 #ifndef TK_COMMAND_H
 #define TK_COMMAND_H
 
-#include <jansson.h>
 
 /*
  * Begin includes
  */
+#include <jansson.h>
+#include <sys/dir.h>
+#include <sys/types.h>
+
 #include "common.h"
 #include "list.h"
 #include "dict.h"
@@ -53,6 +56,7 @@ void task_destroy(TaskT* task);
 void task_add_note(TaskT* task, char* note);
 void task_complete(TaskT* task);
 void task_add_child(TaskT* parent, TaskT* child);
+void task_print(TaskT*);
 /*
  * write json data to a file 
  */

@@ -100,13 +100,27 @@ int task_write(ListT* tasks, char* const filename) {
     }
 
     write_result = json_dump_file(task_json_arr, filename, kJsonFlags);
-    _assert_that(write_result == 0, "failed to write json to file");
 
     //freeing the memory for json
     json_decref(task_json_arr);
 
-    return 0;
+    return write_result;
 
+}
+
+
+void task_print(TaskT* task) {
+    printf("\n%s\n", task->text);
+
+    if (task->notes != NULL && task->notes->size > 0) {
+        int note_idx;
+        for (note_idx = 0; note_idx < task->notes->size; note_idx++) {
+            char* note_str;
+            note_str = list_obj_at_idx(task->notes, note_idx);
+            puts(note_str);
+        }
+    }
+    puts("");
 }
 
 

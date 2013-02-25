@@ -7,7 +7,6 @@ static const char* kWelcomeMessage =
     "f(inish) - finish the current task\n"
     "s(how) - show current task\n"
     "a(dd) - add a note to the current task\n"
-    "c(hild) - add a child to this task\n"
     "l(oad) - load a task file\n"
     "w(rite) - save a task file\n"
     "q(uit) - quit\n";
@@ -33,11 +32,14 @@ int main() {
     init_command_dict();
 
 
-    get_user_input(&command);
 
-    while (!do_quit(command)) {
-        execute_command(command, tasks, &current);
-        get_user_input(&command);
+    while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
+        get_user_input_msg(&command, "What would you like to do?");
+
+        if (command != NULL && strlen(command) > 0) {
+            execute_command(command, tasks, &current);
+        }
+        puts(" ");
     }
 
     free(command);
@@ -54,12 +56,12 @@ void init_command_dict() {
     dict_add(kCommandStrDict, "show", &execute_show);
     dict_add(kCommandStrDict, "a", &execute_add_note);
     dict_add(kCommandStrDict, "add", &execute_add_note);
-    dict_add(kCommandStrDict, "c", &execute_child);
-    dict_add(kCommandStrDict, "child", &execute_child);
     dict_add(kCommandStrDict, "l", &execute_load);
     dict_add(kCommandStrDict, "load", &execute_load);
     dict_add(kCommandStrDict, "w", &execute_save);
     dict_add(kCommandStrDict, "write", &execute_save);
+    dict_add(kCommandStrDict, "print", &execute_print);
+    dict_add(kCommandStrDict, "p", &execute_print);
 }
 
 
@@ -82,7 +84,7 @@ void execute_command(char* command, ListT* tasks, TaskT** current) {
     command_executor = dict_obj_at(kCommandStrDict, command_token);
 
     if (command_executor == NULL) {
-        _DEBUG("no command");
+        puts("Invalid command");
         return;
     }
 

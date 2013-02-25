@@ -67,3 +67,25 @@ void strlower(char * to_lower) {
     }
 }
 
+
+int strtodigit(char* str) {
+    int str_idx;
+    int digit;
+    int found_digit;
+
+    digit = 0;
+    found_digit = NO;
+
+    for (str_idx = 0; str[str_idx] != '\0'; str_idx++) {
+        char c;
+        c = str[str_idx];
+
+        if (c >= '0' && c <= '9') {
+            found_digit = YES;
+            digit *= 10;
+            digit += (c - '0');
+        }
+    }
+
+    return found_digit ? digit : -1;
+}

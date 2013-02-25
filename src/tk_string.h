@@ -35,4 +35,6 @@ size_t split_arr_size(char * str, char * delim);
  */
 void strlower(char * to_lower);
 
+int strtodigit(char* str);
+
 #endif

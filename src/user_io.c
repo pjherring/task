@@ -2,6 +2,11 @@
 
 static const size_t kUserInputInitSize = 100;
 
+void get_user_input_msg(char** command, const char* message) {
+    puts(message);
+    get_user_input(command);
+}
+
 void get_user_input(char** command) {
     char* _command; /* pointer to *commnad  */
     char c; /* character for getting user input  */
