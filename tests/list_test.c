@@ -5,14 +5,18 @@ static void test_init();
 static void test_obj_at_idx();
 static void test_append();
 static void test_index_of();
+static void test_list_pop();
+static void test_empty();
+static void test_list_iterate();
 
 SuiteT* Suite_list() {
     SuiteT *suite = Suite("list tests", &test_init, &test_obj_at_idx,
-        &test_append, &test_index_of, NULL);
+        &test_append, &test_index_of, &test_list_pop, &test_empty, 
+        &test_list_iterate, NULL);
     return suite;
 }
 
-static void test_init() {
+void test_init() {
     ListT *list = List(10, "one", "two", "three", NULL);
     assert(list != NULL);
     assert(list->values);
@@ -31,14 +35,14 @@ static void test_init() {
     list_destroy(list);
 }
 
-static void test_obj_at_idx() {
+void test_obj_at_idx() {
     ListT *list = List(10, "one", "two", "three", NULL);
     char * obj = list_obj_at_idx(list, 0);
     assert(strcmp(obj, "one") == 0);
     list_destroy(list);
 }
 
-static void test_append() {
+void test_append() {
 
     ListT *list = List(10, "bleh", NULL);
     assert_that(list->size == 1, "size is %d", list->size);
@@ -76,7 +80,7 @@ static void test_append() {
 }
 
 
-static void test_index_of() {
+void test_index_of() {
     char* one = "one";
     char* two = "two";
     char* three= "three";
@@ -88,4 +92,48 @@ static void test_index_of() {
     assert_that(0 == list_index_of(list, one), "incorrect index %d", list_index_of(list, one));
     assert_that(1 == list_index_of(list, two), "incorrect index %d", list_index_of(list, two));
     assert_that(2 == list_index_of(list, three), "incorrect index %d", list_index_of(list, three));
+}
+
+void test_list_pop() {
+    ListT* list;
+    char* one = "one";
+    char* two = "two";
+    char* three = "three";
+    void* popped;
+
+    list = List(10, one, two, three, NULL);
+    popped = list_pop(list);
+    _assert_that(popped == three, "wrong popped value for three");
+    popped = list_pop(list);
+    _assert_that(popped == two, "wrong popped value for two");
+    popped = list_pop(list);
+    _assert_that(popped == one, "wrong popped value for one");
+
+    list_destroy(list);
+}
+
+
+void test_empty() {
+    ListT* list;
+    char* one = "one";
+    char* two = "two";
+    char* three = "three";
+    list = List(10, one, two, three, NULL);
+    list_empty(list, NO);
+    assert(list->size == 0);
+    assert(list->last_value == NULL);
+}
+
+
+void test_list_iterate() {
+    ListT* list;
+    char* one = "one";
+    char* two = "two";
+    char* three = "three";
+    list = List(10, one, two, three, NULL);
+
+    assert(one == list_iterate(list));
+    assert(two == list_iterate(list));
+    assert(three == list_iterate(list));
+    assert(list_iterate(list) == NULL);
 }

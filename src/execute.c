@@ -4,6 +4,7 @@ static int is_command_only(char* command);
 static char* get_text_from_command(char* command);
 static char* make_file_name();
 static int is_loadable(char* filename);
+static ListT* get_loadables(int do_print);
 
 void execute_new(char* command, ListT* tasks, TaskT** current_task) {
     assert(strlen(command) > 0);
@@ -148,25 +149,15 @@ void execute_child(char* command, ListT* tasks, TaskT** current_task) {
     *current_task = child;
 }
 
-static const char* kTaskDir = "tasks";
-
 void execute_load(char* command, ListT* tasks, TaskT** current_task) {
-    DIR* task_dir;
-    struct dirent *task_dirent;
+
     ListT* files;
-    int file_idx, user_selection;
-    char *user_selection_str = NULL, *filename = NULL, *abs_file = NULL;
-
-    task_dir = opendir(kTaskDir);
-    assert(task_dir != NULL);
-
-    files = List(10, NULL);
-    file_idx = 0;
 
     //check if we should save
     if (tasks != NULL && tasks->size > 0) {
+
         char* save_before_load;
-        printf("Save before load? (y)/n?\n");
+        printf("Save before load? (y)/n? ");
         get_user_input(&save_before_load);
 
         if (save_before_load != NULL && strlen(save_before_load) > 0
@@ -176,90 +167,104 @@ void execute_load(char* command, ListT* tasks, TaskT** current_task) {
         }
     }
 
+    files = get_loadables(YES);
+
+    if (files->size > 0) {
+        ListT* _tasks;
+        TaskT* loaded_task;
+        int user_selection;
+        char *filename, *abs_file;;
+
+
+        while ((user_selection = get_numeric_input("Choose which file to load? ")) < 0 || user_selection >= files->size) ;
+        DEBUG("user_selection %d", user_selection);
+        printf("\n\n");
+
+        filename = list_obj_at_idx(files, user_selection);
+        abs_file = malloc(strlen(filename) + 20);
+        sprintf(abs_file, "tasks/%s", filename);
+
+        //destroy all tasks in memory
+        list_empty(tasks, YES);
+        _tasks = task_read(abs_file);
+        list_copy(tasks, _tasks);
+        *current_task = tasks != NULL && tasks->size > 0 ? list_obj_at_idx(tasks, 0) : NULL;
+
+        list_destroy(_tasks);
+        free(abs_file);
+    } else {
+        puts("No files to load.");
+    }
+
+    list_destroy(files);
+}
+
+
+static const char* kTaskDir = "tasks";
+
+ListT* get_loadables(int do_print) {
+    DIR* task_dir;
+    struct dirent *task_dirent;
+    ListT* files;
+    int file_idx;
+
+    task_dir = opendir(kTaskDir);
+    assert(task_dir != NULL);
+
+    files = List(10, NULL);
+    file_idx = 0;
+
     while ((task_dirent = readdir(task_dir)) != NULL) {
         //
         //make sure we are not looking at . and .. files
         if (is_loadable(task_dirent->d_name)) {
+
             list_append(files, task_dirent->d_name);
-            printf("%d) %s\n", file_idx++, task_dirent->d_name);
+
+            if (do_print) {
+                printf("%d) %s\n", file_idx++, task_dirent->d_name);
+            }
         }
     }
 
-    do {
-
-        if (user_selection_str != NULL) {
-            free(user_selection_str);
-        }
-
-        printf("Choose which file to load? ");
-        get_user_input(&user_selection_str);
-        user_selection = strtodigit(user_selection_str);
-    }  while (user_selection < 0 && user_selection >= files->size);
-
-    printf("\n\n");
-
-    filename = list_obj_at_idx(files, user_selection);
-    abs_file = malloc(sizeof(char) * (strlen(filename) + 6));
-    sprintf(abs_file, "tasks/%s", filename);
-
-    //destroy all tasks in memory
-    if (tasks != NULL) {
-        int task_idx;
-        TaskT* item;
-
-        for (task_idx = 0; task_idx < tasks->size; task_idx++) {
-            item = list_obj_at_idx(tasks, task_idx);
-            task_destroy(item);
-        }
-
-        list_destroy(tasks);
-        tasks = NULL;
-    }
-
-    tasks = task_read(abs_file);
-    *current_task = tasks != NULL && tasks->size > 0 ? list_obj_at_idx(tasks, 0) : NULL;
+    return files;
 }
 
 
 int is_loadable(char* filename) {
-    const char* dot_chr;
-    int dot_idx;
-    
     //is this a dot file
-    if (strcmp(".", filename) == 0 
-        && strcmp("..", filename) == 0) {
-        return NO;
-    }
-
-    dot_chr = strrchr(filename,  '.');
-    
-    //if no . exists, its not loadable
-    if (dot_chr == NULL) {
-        return NO;
-    }
-
-    dot_idx = dot_chr - filename;
-
-    //if this dot is not the 2nd to last char
-    if ((dot_idx + 3) != strlen(filename)) {
-        return NO;
-    }
-
-    if (filename[dot_idx + 1] != 'j' && filename[dot_idx + 2] != 's') {
-        return NO;
-    }
-
-    return YES;
+    return strcmp(".", filename) != 0 && strcmp("..", filename) != 0;
 }
 
+static const char* kFilenamePromptFormat = "Enter a filename or hit return to save as '%s'.\n";
 
 void execute_save(char* command, ListT* tasks, TaskT** current_task) {
     char* filename;
     int write_result;
 
     if (tasks != NULL && tasks->size > 0) {
+
+        char* user_filename = NULL;
+        char* input_msg = NULL;
+
         filename = make_file_name();
-        DEBUG("%s", filename);
+        input_msg = malloc(strlen(filename) + strlen(kFilenamePromptFormat) + 1);
+        sprintf(input_msg, kFilenamePromptFormat, filename);
+
+        get_user_input_msg(&user_filename, input_msg);
+
+        if (user_filename != NULL && strlen(user_filename) > 0) {
+            char* user_filename_with_dir;
+
+            user_filename_with_dir = malloc(6 + 1 + strlen(user_filename));
+            sprintf(user_filename_with_dir, "tasks/%s", user_filename);
+
+            free(filename);
+            free(user_filename);
+
+            filename = user_filename_with_dir;
+        }
+        
         write_result = task_write(tasks, filename);
 
         if (task_write < 0) {
@@ -304,7 +309,7 @@ void execute_change(char* command, ListT* tasks, TaskT** current_task) {
 
 
 static const char* kFileTimeFormat = "%Y_%m_%d";
-static size_t kFileTimeFormatSize = sizeof(char) * 10; //4 for year, 2 for month and day, 2 for _ and 1 for \0
+static size_t kFileTimeFormatSize = 20; //4 for year, 2 for month and day, 2 for _ and 1 for \0
 static const char* kFileNameFormat = "tasks/task-%s.js";
 
 static char* make_file_name() {
@@ -320,7 +325,7 @@ static char* make_file_name() {
     strftime(time_str, kFileTimeFormatSize, kFileTimeFormat, local_time);
 
     //insert the date into the filename format
-    filename = malloc(sizeof(char) * (strlen(kFileTimeFormat) + strlen(time_str) + 1));
+    filename = malloc(kFileTimeFormatSize + strlen(time_str) + 1);
     sprintf(filename, kFileNameFormat, time_str);
 
     //make sure we free our memory that held time_str

@@ -110,7 +110,7 @@ int task_write(ListT* tasks, char* const filename) {
 
 
 void task_print(TaskT* task) {
-    printf("%s\n", task->text);
+    printf("%s (%s)\n", task->text, (task->is_complete ? "COMPLTED" : "NOT COMPLETED"));
 
     if (task->notes != NULL && task->notes->size > 0) {
         int note_idx;

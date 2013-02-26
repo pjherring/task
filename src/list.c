@@ -83,3 +83,65 @@ int list_index_of(ListT* self, void* obj) {
 
     return value_idx;
 }
+
+
+void* list_pop(ListT* self) {
+    void* to_return;
+
+    if (self->size > 0) {
+        to_return = *self->last_value;
+        self->values[self->size - 1] = NULL;
+        self->size--;
+        self->last_value = self->size == 0 ? NULL : &self->values[self->size - 1];
+
+        return to_return;
+    }
+
+    return NULL;
+}
+
+
+void list_empty(ListT* self, int do_free) {
+    void* popped;
+
+    while ((popped = list_pop(self)) != NULL) {
+        if (do_free) {
+            free(popped);
+        }
+    }
+}
+
+
+void* list_iterate(ListT* self) {
+    static ListT* current = NULL;
+    static int list_idx = -1;
+
+    assert(self != NULL || current != NULL);
+
+    if (self != NULL && self != current) {
+        current = self;
+        list_idx = 0;
+    }
+
+    assert(current != NULL);
+
+    if (list_idx == current->size) {
+        list_idx = -1;
+        current = NULL;
+        return NULL;
+    } else {
+        return current->values[list_idx++];
+    }
+
+}
+
+
+void list_copy(ListT* dest, ListT* source) {
+    assert(dest != NULL && source != NULL);
+
+    void* item;
+
+    while ( (item = list_iterate(source)) != NULL) {
+        list_append(dest, item);
+    }
+}

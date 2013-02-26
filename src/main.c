@@ -35,14 +35,22 @@ int main() {
     get_user_input_msg(&command, "\nWhat would you like to do? ");
 
     while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
-        execute_command(command, tasks, &current);
+
+        if (command != NULL && strlen(command) > 0) {
+            execute_command(command, tasks, &current);
+        }
+
         get_user_input_msg(&command, "\nWhat would you like to do? ");
     }
 
-    get_user_input_msg(&command, "\nSave your tasks? (y)/n: ");
 
-    if (tasks->size > 0 && command != NULL && strcmp(command, "n") != 0) {
-        execute_save(command, tasks, &current);
+    if (tasks->size > 0) {
+        get_user_input_msg(&command, "\nSave your tasks? (y)/n: ");
+
+        if (strlen(command) == 0 || 
+            (strcmp(command, "n") != 0 && strcmp(command, "N") != 0)) {
+            execute_save(command, tasks, &current);
+        }
     }
 
     free(command);

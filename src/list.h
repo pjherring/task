@@ -49,8 +49,22 @@ void list_destroy(ListT*);
 void list_append(ListT*, void*);
 
 /*
+ * pop last object off
+ */
+void* list_pop(ListT*);
+
+/*
  * Find the index of a certain object
  */
 int list_index_of(ListT*, void*);
+
+/*
+ * Empty the list
+ */
+void list_empty(ListT*, int);
+
+void* list_iterate(ListT*);
+
+void list_copy(ListT* dest, ListT* source);
 
 #endif
