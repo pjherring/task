@@ -84,28 +84,33 @@ void execute_show(char* command, ListT* tasks, TaskT** current_task) {
 
 
 void execute_add_note(char* command, ListT* tasks, TaskT** current_task) {
+
     assert(command != NULL);
-    assert(current_task != NULL);
 
-    if (tasks->size == 0) {
-        puts("No tasks");
-        return;
-    }
+    if (*current_task != NULL) {
 
-    char* note;
+        if (tasks->size == 0) {
+            puts("No tasks");
+            return;
+        }
 
-    if (is_command_only(command)) {
-        get_user_input_msg(&note, "What is your note?");
+        char* note;
+
+        if (is_command_only(command)) {
+            get_user_input_msg(&note, "What is your note?\n");
+        } else {
+            char *after_space, *first_space;
+            int space_idx;
+
+            first_space = strchr(command, ' ');
+            note = malloc(sizeof(char) * (strlen(command) - (command - first_space)));
+            strcpy(note, first_space + 1);
+        }
+
+        task_add_note(*current_task, note);
     } else {
-        char *after_space, *first_space;
-        int space_idx;
-
-        first_space = strchr(command, ' ');
-        note = malloc(sizeof(char) * (strlen(command) - (command - first_space)));
-        strcpy(note, first_space + 1);
+        puts("No current task");
     }
-
-    task_add_note(*current_task, note);
 }
 
 void execute_print(char* command, ListT* tasks, TaskT** current_task) {
