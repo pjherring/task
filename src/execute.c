@@ -126,6 +126,7 @@ void execute_print(char* command, ListT* tasks, TaskT** current_task) {
             TaskT* task;
             task = list_obj_at_idx(tasks, task_idx);
             task_print(task);
+            printf("\n", NULL);
         }
     }
 }
