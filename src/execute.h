@@ -18,5 +18,6 @@ void execute_add_note(char*, ListT*, TaskT**);
 void execute_child(char*, ListT*, TaskT**);
 void execute_load(char*, ListT*, TaskT**);
 void execute_save(char*, ListT*, TaskT**);
+void execute_change(char*, ListT*, TaskT**);
 
 #endif

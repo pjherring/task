@@ -45,15 +45,18 @@ void execute_finish(char* command, ListT* tasks, TaskT** current_task) {
         printf("Finsihing '%s'", _current->text);
         _current->is_complete = YES;
 
-        task_idx = list_index_of(tasks, _current);
+        task_idx = tasks->size - 1;
 
-        while (task_idx > 0 && _current->is_complete == YES) {
-            task_idx--;
+        for (task_idx = tasks->size - 1; 
+            task_idx >= 0 && _current->is_complete == YES;
+            task_idx--) {
             _current = list_obj_at_idx(tasks, task_idx);
         }
 
-        if (task_idx < 0) {
-            puts("All tasks completed!");
+        //-1 because if our loop goes all the way through it will go past the
+        //first one
+        if (task_idx < -1 || _current->is_complete == YES) {
+            puts("\nAll tasks completed!");
             *current_task = NULL;
         } else {
             *current_task = _current;
@@ -257,6 +260,38 @@ void execute_save(char* command, ListT* tasks, TaskT** current_task) {
         }
 
         free(filename);
+    }
+}
+
+void execute_change(char* command, ListT* tasks, TaskT** current_task) {
+    int choice = -1, task_idx, one_displayed = NO;
+    int* choices;
+
+    choices = calloc(tasks->size, sizeof(int));
+
+    for (task_idx = 0; task_idx < tasks->size; task_idx++) {
+        TaskT* task;
+
+        task = list_obj_at_idx(tasks, task_idx);
+
+        if (task->is_complete == NO) {
+            choices[task_idx] = 1;
+            one_displayed = YES;
+            printf("%d) %s\n", task_idx + 1, task->text);
+        }
+    }
+
+    if (one_displayed == YES) {
+        char* msg;
+
+        msg = "Which task do you want to switch to? ";
+        while (choices[(choice = get_numeric_input(msg)) - 1] == 0) {
+            printf("Invalid choice! ", NULL);
+        }
+
+        *current_task = list_obj_at_idx(tasks, choice - 1);
+    } else {
+        puts("No incomplete tasks to switch to.");
     }
 }
 

@@ -31,3 +31,22 @@ void get_user_input(char** command) {
 
     *command = _command;
 }
+
+int get_numeric_input(char* msg) {
+
+    char* user_input_str = NULL;
+    int numeric;
+
+    if (msg != NULL) {
+        printf("%s", msg);
+    }
+
+    while (user_input_str == NULL) {
+        get_user_input(&user_input_str);
+    }
+
+    numeric = strtodigit(user_input_str);
+
+    return numeric;
+}
+

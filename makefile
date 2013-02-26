@@ -37,11 +37,13 @@ memcheck:
 clean: 
 	-rm $(objects)
 	-rm $(main_exec)
-	-rm -rf *.DSYM
+	-rm -rf $(main_exec).dSYM
 
 clean_tests: 
 	-rm $(test_objects)
 	-rm $(test_exec)
+	-rm -rf $(test_exec).dSYM
+
 
 run_tests: test
 	-./$(test_exec)

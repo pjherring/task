@@ -4,24 +4,24 @@ static const char* kWelcomeMessage =
     "\n\n\nWelcome to task!\n"
     "Here are your commands:\n"
     "n(ew) - Begin a new task\n"
+    "a(dd) - add a note to the current task\n"
     "f(inish) - finish the current task\n"
     "s(how) - show current task\n"
-    "a(dd) - add a note to the current task\n"
+    "p(rint) - print tasks\n"
+    "c(hange) - change tasks\n"
     "l(oad) - load a task file\n"
     "w(rite) - save a task file\n"
-    "p(rint) - print tasks\n"
     "q(uit) - quit\n";
     
     
+DictionaryT* get_command_dict();
 void get_user_input(char** command);
 void execute_command(char*, ListT*, TaskT**);
 int do_quit(char * command);
-void init_command_dict();
 
-DictionaryT* kCommandStrDict = NULL;
 
 int main() {
-    printf("%s\n\n", kWelcomeMessage);
+    puts(kWelcomeMessage);
 
     //bootstrap
     char * command;
@@ -31,10 +31,6 @@ int main() {
     tasks = List(10, NULL);
     command = NULL;
     current = NULL;
-
-    init_command_dict();
-
-
 
     while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
         get_user_input_msg(&command, "\nWhat would you like to do? ");
@@ -48,26 +44,36 @@ int main() {
 }
 
 
-void init_command_dict() {
-    kCommandStrDict = Dict();
-    dict_add(kCommandStrDict, "n", &execute_new);
-    dict_add(kCommandStrDict, "new", &execute_new);
-    dict_add(kCommandStrDict, "f", &execute_finish);
-    dict_add(kCommandStrDict, "finish", &execute_finish);
-    dict_add(kCommandStrDict, "s", &execute_show);
-    dict_add(kCommandStrDict, "show", &execute_show);
-    dict_add(kCommandStrDict, "a", &execute_add_note);
-    dict_add(kCommandStrDict, "add", &execute_add_note);
-    dict_add(kCommandStrDict, "l", &execute_load);
-    dict_add(kCommandStrDict, "load", &execute_load);
-    dict_add(kCommandStrDict, "w", &execute_save);
-    dict_add(kCommandStrDict, "write", &execute_save);
-    dict_add(kCommandStrDict, "print", &execute_print);
-    dict_add(kCommandStrDict, "p", &execute_print);
+DictionaryT* get_command_dict() {
+
+    static DictionaryT* command_dict = NULL;
+    
+    if (command_dict == NULL) {
+        command_dict = Dict();
+        dict_add(command_dict, "n", &execute_new);
+        dict_add(command_dict, "new", &execute_new);
+        dict_add(command_dict, "f", &execute_finish);
+        dict_add(command_dict, "finish", &execute_finish);
+        dict_add(command_dict, "s", &execute_show);
+        dict_add(command_dict, "show", &execute_show);
+        dict_add(command_dict, "a", &execute_add_note);
+        dict_add(command_dict, "add", &execute_add_note);
+        dict_add(command_dict, "l", &execute_load);
+        dict_add(command_dict, "load", &execute_load);
+        dict_add(command_dict, "w", &execute_save);
+        dict_add(command_dict, "write", &execute_save);
+        dict_add(command_dict, "print", &execute_print);
+        dict_add(command_dict, "p", &execute_print);
+        dict_add(command_dict, "c", &execute_change);
+        dict_add(command_dict, "change", &execute_change);
+    }
+
+    return command_dict;
 }
 
 
 void execute_command(char* command, ListT* tasks, TaskT** current) {
+
     assert(command != NULL && strlen(command) != 0);
 
     char* command_token = command;
@@ -83,7 +89,7 @@ void execute_command(char* command, ListT* tasks, TaskT** current) {
 
     } 
 
-    command_executor = dict_obj_at(kCommandStrDict, command_token);
+    command_executor = dict_obj_at(get_command_dict(), command_token);
 
     if (command_executor == NULL) {
         puts("Invalid command");
