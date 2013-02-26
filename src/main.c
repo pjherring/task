@@ -32,12 +32,17 @@ int main() {
     command = NULL;
     current = NULL;
 
-    while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
-        get_user_input_msg(&command, "\nWhat would you like to do? ");
+    get_user_input_msg(&command, "\nWhat would you like to do? ");
 
-        if (command != NULL && strlen(command) > 0) {
-            execute_command(command, tasks, &current);
-        }
+    while (command == NULL || strlen(command) == 0 || !do_quit(command)) {
+        execute_command(command, tasks, &current);
+        get_user_input_msg(&command, "\nWhat would you like to do? ");
+    }
+
+    get_user_input_msg(&command, "\nSave your tasks? (y)/n: ");
+
+    if (tasks->size > 0 && command != NULL && strcmp(command, "n") != 0) {
+        execute_save(command, tasks, &current);
     }
 
     free(command);

@@ -89,3 +89,33 @@ int strtodigit(char* str) {
 
     return found_digit ? digit : -1;
 }
+
+char* trim(char* str) {
+    char* trimmed;
+    char* strp;
+    int back_cnt = 0, front_cnt = 0, str_idx = 0, len;
+    size_t trimmed_size;
+
+    strp = str;
+
+    while (*strp == ' ' && *strp != '\0') {
+        strp++;
+        front_cnt++;
+    }
+
+    //are we at the end
+    if (*strp != '\0') {
+
+        for (str_idx = strlen(str) - 1; str[str_idx] == ' '; str_idx--) {
+            back_cnt++;
+        }
+
+    }
+
+    trimmed_size = strlen(str) - back_cnt - front_cnt + 1;
+    trimmed = malloc(trimmed_size);
+    strncpy(trimmed, strp, trimmed_size - 1);
+    trimmed[trimmed_size - 1] = '\0';
+
+    return trimmed;
+}

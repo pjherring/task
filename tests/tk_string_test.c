@@ -10,12 +10,14 @@ static void test_split_arr_size();
 static void test_stroccur();
 static void test_strsplit();
 static void test_substr();
+static void test_trim();
 
 SuiteT* Suite_tk_string() {
     SuiteT* suite = 
         Suite(
             "tk_string", &test_substr, &test_strsplit, &test_stroccur,
-            &test_split_arr_size, &test_strlower, &test_strtodigit, NULL
+            &test_split_arr_size, &test_strlower, &test_strtodigit, 
+            &test_trim, NULL
         );
     return suite;
 }
@@ -77,4 +79,13 @@ static void test_strtodigit() {
     assert_that(int_three == -1, "incorrect %d", int_three);
 }
 
+
+static void test_trim() {
+    char* str = "  this is my text  ";
+    char* trimmed;
+
+    trimmed = trim(str);
+    assert(trimmed != NULL);
+    assert_strs_equal("this is my text", trimmed, "expected '%s', actual '%s'", "this is my text", str);
+}
 

@@ -74,9 +74,12 @@ static void test_finish() {
 
 static void test_add_note() {
     TaskT* task;
+    ListT* tasks;
     
     task = Task("this is a task");
-    execute_add_note(make_str("a this is a note"), NULL, &task);
+    tasks = List(10, task, NULL);
+
+    execute_add_note(make_str("a this is a note"), tasks, &task);
     _assert_that(task->notes != NULL, "notes should not be NULL");
     assert_that(task->notes->size == 1, "incorrect notes size: %d", task->notes->size);
     assert_strs_equal((char*) list_obj_at_idx(task->notes, 0), "this is a note", "incorrect str: '%s'", (char*) list_obj_at_idx(task->notes, 0));

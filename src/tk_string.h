@@ -35,6 +35,14 @@ size_t split_arr_size(char * str, char * delim);
  */
 void strlower(char * to_lower);
 
+/*
+ * get an integer from a string
+ */
 int strtodigit(char* str);
+
+/*
+ * Trim leading and trailing whitespace
+ */
+char* trim(char*);
 
 #endif

@@ -29,7 +29,8 @@ void get_user_input(char** command) {
 
     }
 
-    *command = _command;
+    *command = trim(_command);
+    free(_command);
 }
 
 int get_numeric_input(char* msg) {

@@ -259,6 +259,7 @@ void execute_save(char* command, ListT* tasks, TaskT** current_task) {
 
     if (tasks != NULL && tasks->size > 0) {
         filename = make_file_name();
+        DEBUG("%s", filename);
         write_result = task_write(tasks, filename);
 
         if (task_write < 0) {
