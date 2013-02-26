@@ -18,6 +18,7 @@ const char * kTaskJsonIsCompleteKey = "is_complete";
 static void write_task(json_t *object, TaskT* task);
 static void write_children_to_task(json_t *, TaskT*);
 static TaskT* read_from_json(json_t*);
+static void print_notes(ListT*);
 
 TaskT* Task(char* const task_text) {
 
@@ -111,18 +112,28 @@ int task_write(ListT* tasks, char* const filename) {
 
 void task_print(TaskT* task) {
     printf("%s (%s)\n", task->text, (task->is_complete ? "COMPLTED" : "NOT COMPLETED"));
+    print_notes(task->notes);
+}
 
-    if (task->notes != NULL && task->notes->size > 0) {
-        int note_idx;
+void print_notes(ListT* notes) {
 
-        for (note_idx = 0; note_idx < task->notes->size; note_idx++) {
-            char* note_str;
-            note_str = list_obj_at_idx(task->notes, note_idx);
-            printf("\tNote #%d: %s\n", (note_idx + 1), note_str);
+    if (notes != NULL && notes->size > 0) {
+        char* note;
+        int note_idx = 0;
+
+        printf("Notes:\n");
+
+        while ((note = list_iterate(notes)) != NULL) {
+            char* token;
+            printf("%d)\n", note_idx++ + 1);
+
+            while ((token = strtok(note, "\n")) != NULL) {
+                printf("  %s\n", token);
+                note = NULL;
+            }
+
         }
 
-    } else {
-        puts("No Notes");
     }
 }
 

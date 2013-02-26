@@ -51,3 +51,29 @@ int get_numeric_input(char* msg) {
     return numeric;
 }
 
+
+void get_multiline_input(char** input, const char* msg) {
+    char* _input;
+    char c;
+    int input_idx;
+    size_t current_size;
+
+    printf(msg, NULL);
+    _input = calloc(kUserInputInitSize, 1);
+    c = EOF;
+    input_idx = 0;
+    current_size = kUserInputInitSize;
+
+    while ((c = getchar()) != EOF && strstr(_input, "\n\n") == NULL) {
+        _input[input_idx++] = c;
+
+        if (input_idx == current_size) {
+            current_size += kUserInputInitSize;
+            _input = realloc(_input, current_size);
+        }
+    }
+
+    *input = trim(_input);
+    free(_input);
+}
+

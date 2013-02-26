@@ -98,7 +98,7 @@ void execute_add_note(char* command, ListT* tasks, TaskT** current_task) {
         char* note;
 
         if (is_command_only(command)) {
-            get_user_input_msg(&note, "What is your note?\n");
+            get_multiline_input(&note, "What is your note? (hit return twice to end)\n");
         } else {
             char *after_space, *first_space;
             int space_idx;
